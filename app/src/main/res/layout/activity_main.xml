@@ -60,10 +60,10 @@
                 android:id="@+id/back_arrow_search_bar"
                 app:tint="@color/gray"/>
 
-            <EditText
+
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Huzzah"
                 android:textColor="@color/dark_gray"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/back_arrow_search_bar"
@@ -72,7 +72,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:id="@+id/search_ticker">
-            </EditText>
+            </AutoCompleteTextView>
 
             <ImageView
                 android:layout_width="40dp"

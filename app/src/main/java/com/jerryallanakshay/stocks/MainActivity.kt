@@ -11,6 +11,9 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,12 +30,16 @@ class MainActivity : AppCompatActivity() {
         val closeSearchBtn = findViewById<ImageView>(R.id.close_search_bar)
         val toolbarLyt = findViewById<RelativeLayout>(R.id.default_toolbar_layout)
         val searchToolbarLyt = findViewById<RelativeLayout>(R.id.search_toolbar_layout)
-        val searchTicker = findViewById<EditText>(R.id.search_ticker)
+        val searchTicker = findViewById<AutoCompleteTextView>(R.id.search_ticker)
         val finnhubLinkText = findViewById<TextView>(R.id.finnhub_link)
         val currentCashBalance = findViewById<TextView>(R.id.current_cash_balance)
+        val todayText = findViewById<TextView>(R.id.date_today)
 
         val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
 
+        setAutoCompleteData(searchTicker, applicationContext, arrayOf("Apple", "Banana", "Cherry", "Date", "Grape", "Kiwi", "Mango", "Pear"))
+
+        setCurrentDate(todayText)
         getSetCashBalance(sharedPref, currentCashBalance)
 
         searchBtn.setOnClickListener {
@@ -52,6 +59,18 @@ class MainActivity : AppCompatActivity() {
             openLinkOnBrowser("https://finnhub.io/")
         }
 
+    }
+
+    fun setAutoCompleteData(searchTicker: AutoCompleteTextView, context: Context, data: Array<String>) {
+        val adapter = ArrayAdapter(applicationContext, android.R.layout.select_dialog_item, data)
+        searchTicker.threshold = 1
+        searchTicker.setAdapter(adapter)
+    }
+
+    fun setCurrentDate(todayText: TextView) {
+        val sdf = SimpleDateFormat("dd MMMM yyyy")
+        val currentDate = sdf.format(Date())
+        todayText.text = currentDate.toString()
     }
 
     fun getSetCashBalance(sharedPref: SharedPreferences, currentCashBalanceText: TextView) {
