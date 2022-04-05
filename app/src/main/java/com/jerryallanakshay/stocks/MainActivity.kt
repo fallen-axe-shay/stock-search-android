@@ -5,9 +5,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
 
-        setAutoCompleteData(searchTicker, applicationContext, arrayOf("Apple", "Banana", "Cherry", "Date", "Grape", "Kiwi", "Mango", "Pear"))
+        setAutoCompleteData(searchTicker, arrayOf("Apple", "Banana", "Cherry", "Date", "Grape", "Kiwi", "Mango", "Pear"))
 
         setCurrentDate(todayText)
         getSetCashBalance(sharedPref, currentCashBalance)
@@ -61,10 +63,20 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun setAutoCompleteData(searchTicker: AutoCompleteTextView, context: Context, data: Array<String>) {
+    fun setAutoCompleteData(searchTicker: AutoCompleteTextView, data: Array<String>) {
         val adapter = ArrayAdapter(applicationContext, android.R.layout.select_dialog_item, data)
         searchTicker.threshold = 1
         searchTicker.setAdapter(adapter)
+        searchTicker.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
+            searchTicker.setText(modifyAutocompleteSelectedOption(data[pos]))
+            searchTicker.setSelection(searchTicker.length())
+            hideKeyboard(applicationContext, searchTicker)
+            searchTicker.clearFocus()
+        }
+    }
+
+    fun modifyAutocompleteSelectedOption(value: String): String {
+        return "abcd"
     }
 
     fun setCurrentDate(todayText: TextView) {
@@ -101,8 +113,8 @@ class MainActivity : AppCompatActivity() {
     fun showNormalAppBar(searchToolbarLyt: View, toolbarLyt: View, searchTicker: View) {
         searchToolbarLyt.visibility = View.GONE
         toolbarLyt.visibility = View.VISIBLE
-        searchTicker.clearFocus()
         hideKeyboard(applicationContext, searchTicker)
+        searchTicker.clearFocus()
     }
 
     fun hideKeyboard(context: Context, view: View) {
