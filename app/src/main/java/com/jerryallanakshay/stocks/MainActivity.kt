@@ -2,12 +2,15 @@ package com.jerryallanakshay.stocks
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        val activity = this
+
         val searchBtn = findViewById<ImageView>(R.id.search_btn)
         val backSearchBtn = findViewById<ImageView>(R.id.back_arrow_search_bar)
         val closeSearchBtn = findViewById<ImageView>(R.id.close_search_bar)
@@ -24,6 +29,11 @@ class MainActivity : AppCompatActivity() {
         val searchToolbarLyt = findViewById<RelativeLayout>(R.id.search_toolbar_layout)
         val searchTicker = findViewById<EditText>(R.id.search_ticker)
         val finnhubLinkText = findViewById<TextView>(R.id.finnhub_link)
+        val currentCashBalance = findViewById<TextView>(R.id.current_cash_balance)
+
+        val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+
+        getSetCashBalance(sharedPref, currentCashBalance)
 
         searchBtn.setOnClickListener {
             //Toast.makeText(this, "You clicked me.", Toast.LENGTH_SHORT).show()
@@ -42,6 +52,19 @@ class MainActivity : AppCompatActivity() {
             openLinkOnBrowser("https://finnhub.io/")
         }
 
+    }
+
+    fun getSetCashBalance(sharedPref: SharedPreferences, currentCashBalanceText: TextView) {
+        val currentCashBalance = sharedPref.getFloat(getString(R.string.cash_balance), 25000.00F)
+        with (sharedPref.edit()) {
+            putFloat(getString(R.string.cash_balance), currentCashBalance)
+            apply()
+        }
+        currentCashBalanceText.text = roundToTwoDecimalPlaces(currentCashBalance.toDouble()).toString()
+    }
+
+    fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
+        return BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN)
     }
 
     fun openLinkOnBrowser(url: String) {

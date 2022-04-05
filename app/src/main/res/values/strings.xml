@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Stocks</string>
+    <string name="stock_app_shared_pref">jerry_stock_app_shared_pref</string>
+    <string name="cash_balance">cash_balance</string>
 </resources>
