@@ -126,6 +126,86 @@
                 android:paddingStart="20dp"
                 android:id="@+id/portfolio_banner"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/portfolio_banner"
+                android:id="@+id/portfolio_summary">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp"
+                        android:layout_centerVertical="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Net Worth"
+                            android:padding="5dp"
+                            android:textStyle="bold"
+                            android:textSize="20dp"
+                            android:textColor="@color/gray"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$12345"
+                            android:padding="5dp"
+                            android:id="@+id/current_net_worth"
+                            android:textStyle="bold"
+                            android:textSize="20dp"
+                            android:textColor="@color/gray"/>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp"
+                        android:layout_centerVertical="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cash Balance"
+                            android:padding="5dp"
+                            android:textStyle="bold"
+                            android:textSize="20dp"
+                            android:textColor="@color/gray"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$12345"
+                            android:padding="5dp"
+                            android:id="@+id/current_cash_balance"
+                            android:textStyle="bold"
+                            android:textSize="20dp"
+                            android:textColor="@color/gray"/>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,10 +213,22 @@
                 android:textAllCaps="true"
                 android:textColor="@color/black"
                 android:background="@color/gray_bg"
-                android:layout_below="@id/portfolio_banner"
+                android:layout_below="@id/portfolio_summary"
                 android:textStyle="bold"
                 android:padding="10dp"
-                android:paddingStart="20dp"/>
+                android:paddingStart="20dp"
+                android:id="@+id/favorites_banner"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Powered by Finnhub"
+                android:layout_below="@id/favorites_banner"
+                android:gravity="center"
+                android:padding="20dp"
+                android:textStyle="italic"
+                android:textColor="@color/gray"
+                android:id="@+id/finnhub_link"/>
 
         </RelativeLayout>
 

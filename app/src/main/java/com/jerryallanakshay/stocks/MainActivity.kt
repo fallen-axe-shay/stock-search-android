@@ -1,6 +1,8 @@
 package com.jerryallanakshay.stocks
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -21,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         val toolbarLyt = findViewById<RelativeLayout>(R.id.default_toolbar_layout)
         val searchToolbarLyt = findViewById<RelativeLayout>(R.id.search_toolbar_layout)
         val searchTicker = findViewById<EditText>(R.id.search_ticker)
+        val finnhubLinkText = findViewById<TextView>(R.id.finnhub_link)
 
         searchBtn.setOnClickListener {
             //Toast.makeText(this, "You clicked me.", Toast.LENGTH_SHORT).show()
@@ -35,6 +38,16 @@ class MainActivity : AppCompatActivity() {
             showNormalAppBar(searchToolbarLyt, toolbarLyt, searchTicker)
         }
 
+        finnhubLinkText.setOnClickListener {
+            openLinkOnBrowser("https://finnhub.io/")
+        }
+
+    }
+
+    fun openLinkOnBrowser(url: String) {
+        val openURL = Intent(Intent.ACTION_VIEW)
+        openURL.data = Uri.parse(url)
+        startActivity(openURL)
     }
 
     fun showSearchBar(searchToolbarLyt: View, toolbarLyt: View, searchTicker: View) {
