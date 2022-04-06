@@ -59,13 +59,14 @@ class MainActivity : AppCompatActivity() {
         val searchToolbarLyt = findViewById<RelativeLayout>(R.id.search_toolbar_layout)
         val searchTicker = findViewById<AutoCompleteTextView>(R.id.search_ticker)
         val finnhubLinkText = findViewById<TextView>(R.id.finnhub_link)
-        val currentCashBalance = findViewById<TextView>(R.id.current_cash_balance)
         val todayText = findViewById<TextView>(R.id.date_today)
         val watchlistList = findViewById<RecyclerView>(R.id.favorites_list)
         val pageLoader = findViewById<ProgressBar>(R.id.page_loader)
         val pageContent = findViewById<RelativeLayout>(R.id.page_content)
 
         val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+
+        addBannersToArrayList()
 
         searchTicker.autocapitalize()
         setAdapterAndItemClickListener(searchTicker)
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         setWatchlistRecyclerView(watchlistList, sharedPref, pageLoader, pageContent)
 
         setCurrentDate(todayText)
-        getSetCashBalance(sharedPref, currentCashBalance)
+        getSetCashBalance(sharedPref)
 
         searchBtn.setOnClickListener {
             showSearchBar(searchToolbarLyt, toolbarLyt, searchTicker)
@@ -93,9 +94,6 @@ class MainActivity : AppCompatActivity() {
         finnhubLinkText.setOnClickListener {
             openLinkOnBrowser("https://finnhub.io/")
         }
-
-
-
     }
 
     private fun setWatchlistRecyclerView(watchlistList: RecyclerView, sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
@@ -110,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchFavoritesData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
-        watchlistArrayList?.clear()
+        watchlistArrayList?.removeIf { data -> data.type == 5 }
         val prefData = sharedPref.getString(getString(R.string.watchlist), "[]")
         val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
         for(i in 0 until jsonArray.length()) {
@@ -119,13 +117,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun addBannersToArrayList() {
+        watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 1, banner = "portfolio"))
+        watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 4, banner = "favorites"))
+    }
+
     fun makePortfolioAndStockRequest(ticker: String, pageLoader: ProgressBar, pageContent: RelativeLayout) {
         val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$ticker"
         val jsonObjectRequest = JsonObjectRequest (
             Request.Method.GET, url, null,
             { response ->
-               watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), response.getString("name"), response.getString("c").toDouble(), response.getString("d").toDouble(), response.getString("dp").toDouble()))
-                watchlistAdapter?.notifyDataSetChanged()
+               watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), response.getString("name"), response.getString("c").toDouble(), response.getString("d").toDouble(), response.getString("dp").toDouble(), 5, ""))
+                watchlistAdapter?.notifyDataSetChangedWithSort()
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
@@ -233,13 +236,15 @@ class MainActivity : AppCompatActivity() {
         todayText.text = currentDate.toString()
     }
 
-    fun getSetCashBalance(sharedPref: SharedPreferences, currentCashBalanceText: TextView) {
+    fun getSetCashBalance(sharedPref: SharedPreferences) {
+        watchlistArrayList?.removeIf { data -> data.type == 2 }
         val currentCashBalance = sharedPref.getFloat(getString(R.string.cash_balance), 25000.00F)
         with (sharedPref.edit()) {
             putFloat(getString(R.string.cash_balance), currentCashBalance)
             apply()
         }
-        currentCashBalanceText.text = roundToTwoDecimalPlaces(currentCashBalance.toDouble()).toString()
+        val netWorth = 213.312
+        watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 2, netWorth = netWorth, cashBalance = currentCashBalance.toDouble()))
     }
 
     fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
@@ -286,6 +291,7 @@ class MainActivity : AppCompatActivity() {
             val pageLoader = findViewById<ProgressBar>(R.id.page_loader)
             val pageContent = findViewById<RelativeLayout>(R.id.page_content)
             fetchFavoritesData(sharedPref, pageLoader, pageContent)
+            getSetCashBalance(sharedPref)
         } else {
             shouldExecuteOnResume = true
         }

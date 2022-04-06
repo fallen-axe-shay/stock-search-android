@@ -2,7 +2,144 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/portfolio_summary"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_centerVertical="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Net Worth"
+                    android:padding="5dp"
+                    android:textStyle="bold"
+                    android:textSize="20dp"
+                    android:textColor="@color/gray"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$"
+                        android:padding="5dp"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:paddingEnd="0dp"
+                        android:textColor="@color/gray"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12345"
+                        android:padding="5dp"
+                        android:paddingStart="0dp"
+                        android:id="@+id/current_net_worth"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:textColor="@color/gray"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_centerVertical="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cash Balance"
+                    android:padding="5dp"
+                    android:textStyle="bold"
+                    android:textSize="20dp"
+                    android:textColor="@color/gray"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$"
+                        android:padding="5dp"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:paddingEnd="0dp"
+                        android:textColor="@color/gray"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12345"
+                        android:padding="5dp"
+                        android:paddingStart="0dp"
+                        android:id="@+id/current_cash_balance"
+                        android:textStyle="bold"
+                        android:textSize="20dp"
+                        android:textColor="@color/gray"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:background="@color/gray_bg"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:paddingStart="20dp"
+        android:id="@+id/banner"
+        android:text="portfolio"/>
+
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:id="@+id/ticker_data">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -149,5 +286,7 @@
             android:id="@+id/chevron_symbol"/>
 
     </RelativeLayout>
+
+</LinearLayout>
 
 </LinearLayout>

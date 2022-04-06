@@ -3,11 +3,12 @@ package com.jerryallanakshay.stocks
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.media.Image
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,11 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
             val bracketSymbolClose: TextView = view.findViewById(R.id.bracket_symbol_close)
             val trendingSymbol: ImageView = view.findViewById(R.id.trending_symbol)
             val chevronSymbol: ImageView = view.findViewById(R.id.chevron_symbol)
+            val banner: TextView = view.findViewById(R.id.banner)
+            val portfolioSummary: LinearLayout = view.findViewById(R.id.portfolio_summary)
+            val tickerData: LinearLayout = view.findViewById(R.id.ticker_data)
+            val netWorth: TextView = view.findViewById(R.id.current_net_worth)
+            val cashBalance: TextView = view.findViewById(R.id.current_cash_balance)
         }
 
         // Create new views (invoked by the layout manager)
@@ -47,32 +53,59 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
 
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
-            viewHolder.ticker.text = dataSet?.get(position)?.ticker
-            viewHolder.name.text = dataSet?.get(position)?.stockName
-            viewHolder.stockPrice.text = dataSet?.get(position)?.stockPrice
-            viewHolder.change.text = dataSet?.get(position)?.stockChange
-            viewHolder.changePercent.text = dataSet?.get(position)?.stockChangePercent
+            viewHolder.portfolioSummary.visibility = View.GONE
+            viewHolder.banner.visibility = View.GONE
+            viewHolder.tickerData.visibility = View.GONE
 
-            if(dataSet?.get(position)?.stockChange?.toDouble()!! > 0) {
-                viewHolder.trendingSymbol.visibility = View.VISIBLE
-                viewHolder.trendingSymbol.setImageResource(R.drawable.trending_up)
-                setColors(viewHolder, R.color.green_tint)
-            } else if(dataSet?.get(position)?.stockChange?.toDouble()!! < 0) {
-                viewHolder.trendingSymbol.visibility = View.VISIBLE
-                viewHolder.trendingSymbol.setImageResource(R.drawable.trending_down)
-                setColors(viewHolder, R.color.red_tint)
-            } else {
-                viewHolder.trendingSymbol.visibility = View.GONE
-                setColors(viewHolder, R.color.red_tint)
-            }
-
-            viewHolder.chevronSymbol.setOnClickListener {
-                val intent = Intent(viewHolder.chevronSymbol.context, StockSummary::class.java).apply {
-                    putExtra(viewHolder.chevronSymbol.resources.getString(R.string.intent_stock_summary), dataSet?.get(position)?.ticker)
+            when (dataSet?.get(position)?.type) {
+                1 -> {
+                    viewHolder.banner.visibility = View.VISIBLE
+                    viewHolder.banner.text = dataSet?.get(position)?.banner
                 }
-                viewHolder.chevronSymbol.context.startActivity(intent)
-            }
+                2 -> {
+                    viewHolder.portfolioSummary.visibility = View.VISIBLE
+                    viewHolder.netWorth.text = dataSet?.get(position)?.netWorth
+                    viewHolder.cashBalance.text = dataSet?.get(position)?.cashBalance
+                }
+                3 -> {
+                    //viewHolder.portfolioSummary.visibility = View.VISIBLE
+                }
+                4 -> {
+                    viewHolder.banner.visibility = View.VISIBLE
+                    viewHolder.banner.text = dataSet?.get(position)?.banner
+                }
+                5 -> {
+                    viewHolder.tickerData.visibility = View.VISIBLE
+                    viewHolder.ticker.text = dataSet?.get(position)?.ticker
+                    viewHolder.name.text = dataSet?.get(position)?.stockName
+                    viewHolder.stockPrice.text = dataSet?.get(position)?.stockPrice
+                    viewHolder.change.text = dataSet?.get(position)?.stockChange
+                    viewHolder.changePercent.text = dataSet?.get(position)?.stockChangePercent
 
+                    if(dataSet?.get(position)?.stockChange?.toDouble()!! > 0) {
+                        viewHolder.trendingSymbol.visibility = View.VISIBLE
+                        viewHolder.trendingSymbol.setImageResource(R.drawable.trending_up)
+                        setColors(viewHolder, R.color.green_tint)
+                    } else if(dataSet?.get(position)?.stockChange?.toDouble()!! < 0) {
+                        viewHolder.trendingSymbol.visibility = View.VISIBLE
+                        viewHolder.trendingSymbol.setImageResource(R.drawable.trending_down)
+                        setColors(viewHolder, R.color.red_tint)
+                    } else {
+                        viewHolder.trendingSymbol.visibility = View.GONE
+                        setColors(viewHolder, R.color.red_tint)
+                    }
+
+                    viewHolder.chevronSymbol.setOnClickListener {
+                        val intent = Intent(viewHolder.chevronSymbol.context, StockSummary::class.java).apply {
+                            putExtra(viewHolder.chevronSymbol.resources.getString(R.string.intent_stock_summary), dataSet?.get(position)?.ticker)
+                        }
+                        viewHolder.chevronSymbol.context.startActivity(intent)
+                    }
+                }
+                else -> {
+                    //Do nothing
+                }
+            }
 
         }
 
@@ -100,7 +133,7 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                 apply()
             }
             dataSet?.removeAt(position)
-            this.notifyDataSetChanged()
+            this.notifyDataSetChangedWithSort()
         }
 
         fun getContext(): Context {
@@ -114,6 +147,34 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                 }
             }
             return -1
+        }
+
+        fun notifyDataSetChangedWithSort() {
+            dataSet?.sortBy { item -> item.type }
+            notifyDataSetChanged()
+        }
+
+        fun getData(): ArrayList<FavoritesPortfolioDataModel>? {
+            return dataSet
+        }
+
+        fun getItemBounds(type: Int?): Array<Int?> {
+            when(type) {
+                3 -> {
+                    val firstIndex = dataSet?.indexOfFirst { it.type == 3 }
+                    val secondIndex = dataSet?.indexOfLast { it.type == 3 }
+                    return arrayOf(firstIndex, secondIndex)
+                }
+                5 -> {
+                    val firstIndex = dataSet?.indexOfFirst { it.type == 5 }
+                    val secondIndex = dataSet?.indexOfLast { it.type == 5 }
+                    return arrayOf(firstIndex, secondIndex)
+                }
+                else -> {
+                    /*Do nothing*/
+                }
+            }
+            return arrayOf(-1,-1)
         }
 
     }

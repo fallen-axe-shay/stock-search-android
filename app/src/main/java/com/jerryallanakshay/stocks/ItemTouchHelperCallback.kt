@@ -33,7 +33,13 @@ class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.Si
         target: RecyclerView.ViewHolder
     ): Boolean {
         val from = viewHolder.adapterPosition
-        val to = target.adapterPosition
+        var to = target.adapterPosition
+        val itemBounds = mAdapter.getItemBounds(mAdapter.getData()?.get(from)?.type)
+        if(to>itemBounds[1]!!) {
+            to = itemBounds[1]!!
+        } else if(to<itemBounds[0]!!) {
+            to = itemBounds[0]!!
+        }
         mAdapter.notifyItemMoved(from, to)
         return true
     }
