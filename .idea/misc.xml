@@ -9,6 +9,8 @@
         <entry key="..\:/Users/allan/Desktop/Academic Files/Assignments/Web Tech - CSCI 571/Assignment 9/csci-571-hw-9/app/src/main/res/drawable/splash_screen_xml.xml" value="0.109" />
         <entry key="..\:/Users/allan/Desktop/Academic Files/Assignments/Web Tech - CSCI 571/Assignment 9/csci-571-hw-9/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/allan/Desktop/Academic Files/Assignments/Web Tech - CSCI 571/Assignment 9/csci-571-hw-9/app/src/main/res/layout/activity_stock_summary.xml" value="0.2" />
+        <entry key="..\:/Users/allan/Desktop/Academic Files/Assignments/Web Tech - CSCI 571/Assignment 9/csci-571-hw-9/app/src/main/res/layout/fragment_stock_history_chart.xml" value="0.25" />
+        <entry key="..\:/Users/allan/Desktop/Academic Files/Assignments/Web Tech - CSCI 571/Assignment 9/csci-571-hw-9/app/src/main/res/layout/fragment_stock_summary_chart.xml" value="0.2359375" />
         <entry key="..\:/Users/allan/Desktop/Academic Files/Assignments/Web Tech - CSCI 571/Assignment 9/csci-571-hw-9/app/src/main/res/layout/watchlist_item.xml" value="0.2" />
       </map>
     </option>

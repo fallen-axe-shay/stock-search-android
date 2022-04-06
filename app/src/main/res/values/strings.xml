@@ -8,4 +8,6 @@
     <string name="profile_and_quote_api">api/getCompanyProfileAndQuote/</string>
     <string name="title_activity_stock_summary">StockSummary</string>
     <string name="intent_stock_summary">com.jerryallanakshay.stocks.STOCK</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

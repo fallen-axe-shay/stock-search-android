@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 import org.json.JSONTokener
 
@@ -22,8 +24,15 @@ class StockSummary : AppCompatActivity() {
         val stockTicker = findViewById<TextView>(R.id.stock_summary_ticker)
         val starBtn = findViewById<ImageView>(R.id.star_btn)
         val backBtn = findViewById<ImageView>(R.id.back_arrow_stock_summary)
+        val pager = findViewById<ViewPager>(R.id.viewPager)
+        val tab = findViewById<TabLayout>(R.id.tabs)
 
         val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+
+        val adapter = ViewPagerAdapter(supportFragmentManager)
+
+        setupViewPager(adapter, pager, tab)
+
 
         stockSymbol = intent.getStringExtra(resources.getString(R.string.intent_stock_summary))
         stockTicker.text = stockSymbol
@@ -38,6 +47,18 @@ class StockSummary : AppCompatActivity() {
             toggleStar(starBtn, sharedPref)
         }
 
+    }
+
+    fun setupViewPager(adapter: ViewPagerAdapter, pager: ViewPager, tab: TabLayout) {
+        // add fragment to the list
+        adapter.addFragment(StockSummaryChart(), "GeeksForGeeks")
+        adapter.addFragment(StockHistoryChart(), "Code Chef")
+
+        // Adding the Adapter to the ViewPager
+        pager.adapter = adapter
+
+        // bind the viewPager with the TabLayout.
+        tab.setupWithViewPager(pager)
     }
 
     fun toggleStar(starBtn: ImageView, sharedPref: SharedPreferences) {
