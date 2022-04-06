@@ -29,7 +29,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -39,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private var autoCompleteAdapter: ArrayAdapter<String>? = null
     private var watchlistArrayList: ArrayList<FavoritesPortfolioDataModel>? = ArrayList()
     private var watchlistAdapter: WatchlistAdapter? = null
+    private var itemTouchHelper: ItemTouchHelper? = null
     private var requestCounter: Int = 0
     private var completedRequests: Int = 0
     private var shouldExecuteOnResume: Boolean = true
@@ -101,9 +101,11 @@ class MainActivity : AppCompatActivity() {
     private fun setWatchlistRecyclerView(watchlistList: RecyclerView, sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
         val linearLayoutManager = LinearLayoutManager(applicationContext)
         watchlistList.layoutManager = linearLayoutManager
-        watchlistAdapter = WatchlistAdapter(watchlistArrayList)
+        watchlistAdapter = WatchlistAdapter(watchlistArrayList, applicationContext, sharedPref)
         watchlistList.adapter = watchlistAdapter
         watchlistList.addItemDecoration(DividerItemDecoration(watchlistList.context, DividerItemDecoration.VERTICAL))
+        itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback(watchlistAdapter!!))
+        itemTouchHelper!!.attachToRecyclerView(watchlistList)
         fetchFavoritesData(sharedPref, pageLoader, pageContent)
     }
 

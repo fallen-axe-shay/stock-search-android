@@ -1,15 +1,20 @@
 package com.jerryallanakshay.stocks
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import org.json.JSONArray
+import org.json.JSONTokener
 
-class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataModel>?) : RecyclerView.Adapter<WatchlistAdapter.ViewHolder>() {
+class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataModel>?, private val context: Context, private val sharedPref: SharedPreferences) : RecyclerView.Adapter<WatchlistAdapter.ViewHolder>() {
 
         /**
          * Provide a reference to the type of views that you are using
@@ -71,18 +76,44 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
 
         }
 
-    fun setColors(viewHolder: ViewHolder, color: Int) {
-        viewHolder.trendingSymbol.setColorFilter(viewHolder.trendingSymbol.resources.getColor(color))
-        viewHolder.change.setTextColor(viewHolder.change.resources.getColor(color))
-        viewHolder.changePercent.setTextColor(viewHolder.changePercent.resources.getColor(color))
-        viewHolder.dollarSymbol.setTextColor(viewHolder.dollarSymbol.resources.getColor(color))
-        viewHolder.bracketSymbol.setTextColor(viewHolder.bracketSymbol.resources.getColor(color))
-        viewHolder.bracketSymbolClose.setTextColor(viewHolder.bracketSymbolClose.resources.getColor(color))
-    }
+        fun setColors(viewHolder: ViewHolder, color: Int) {
+            viewHolder.trendingSymbol.setColorFilter(viewHolder.trendingSymbol.resources.getColor(color))
+            viewHolder.change.setTextColor(viewHolder.change.resources.getColor(color))
+            viewHolder.changePercent.setTextColor(viewHolder.changePercent.resources.getColor(color))
+            viewHolder.dollarSymbol.setTextColor(viewHolder.dollarSymbol.resources.getColor(color))
+            viewHolder.bracketSymbol.setTextColor(viewHolder.bracketSymbol.resources.getColor(color))
+            viewHolder.bracketSymbolClose.setTextColor(viewHolder.bracketSymbolClose.resources.getColor(color))
+        }
 
         // Return the size of your dataset (invoked by the layout manager)
         override fun getItemCount() = (dataSet?.size)?:0
 
+        fun deleteItem(position: Int) {
+            val prefData = sharedPref.getString(context.getString(R.string.watchlist), "[]")
+            val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
+            val elementIndex = jsonArray.getIndexOfString(dataSet?.get(position)?.ticker)
+            if(elementIndex!=-1) {
+                jsonArray.remove(elementIndex)
+            }
+            with (sharedPref.edit()) {
+                putString(context.getString(com.jerryallanakshay.stocks.R.string.watchlist), jsonArray.toString())
+                apply()
+            }
+            dataSet?.removeAt(position)
+            this.notifyDataSetChanged()
+        }
 
+        fun getContext(): Context {
+            return context
+        }
+
+        private fun JSONArray.getIndexOfString(value: String?): Int {
+            for(i in 0 until length()) {
+                if(getString(i).equals(value)) {
+                    return i
+                }
+            }
+            return -1
+        }
 
     }
