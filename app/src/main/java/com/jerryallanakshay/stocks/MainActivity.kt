@@ -6,11 +6,19 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
@@ -18,6 +26,10 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    private var queue: RequestQueue? = null
+    private var autocompleteData: MutableList<String> = mutableListOf<String>()
+    private var autoCompleteAdapter: ArrayAdapter<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -39,13 +51,15 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
 
-        setAutoCompleteData(searchTicker, arrayOf("Apple", "Banana", "Cherry", "Date", "Grape", "Kiwi", "Mango", "Pear"))
+        setAdapterAndItemClickListener(searchTicker)
+
+        initializeRequestQueue()
+        setAutoCompleteAPICalls(searchTicker)
 
         setCurrentDate(todayText)
         getSetCashBalance(sharedPref, currentCashBalance)
 
         searchBtn.setOnClickListener {
-            //Toast.makeText(this, "You clicked me.", Toast.LENGTH_SHORT).show()
             showSearchBar(searchToolbarLyt, toolbarLyt, searchTicker)
         }
 
@@ -61,14 +75,66 @@ class MainActivity : AppCompatActivity() {
             openLinkOnBrowser("https://finnhub.io/")
         }
 
+
+
     }
 
-    fun setAutoCompleteData(searchTicker: AutoCompleteTextView, data: Array<String>) {
-        val adapter = ArrayAdapter(applicationContext, android.R.layout.select_dialog_item, data)
+
+    fun initializeRequestQueue() {
+        queue = Volley.newRequestQueue(this)
+    }
+
+    fun setAutoCompleteAPICalls(searchTicker: AutoCompleteTextView) {
+
+        searchTicker.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {
+                val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.autocomplete_api)}$s"
+                val jsonObjectRequest = JsonObjectRequest (
+                    Request.Method.GET, url, null,
+                    { response ->
+                        val compList = mutableListOf<String>()
+                        val result = response.getJSONArray("result")
+                        for (i in 0 until result.length()) {
+                            val company = result.getJSONObject(i)
+                            if(!company.getString("type").equals("Common Stock") || company.getString("displaySymbol").contains(".")) {
+                                continue
+                            }
+                            compList.add("${company.getString("symbol").uppercase()} | ${company.getString("description").uppercase()}")
+                        }
+                        updateAutoCompleteAdapter(compList.toTypedArray(), searchTicker)
+                    },
+                    { /*Do nothing*/ })
+                jsonObjectRequest.tag = s.toString()
+                queue?.add(jsonObjectRequest)
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                queue?.cancelAll(s)
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) { }
+
+        })
+    }
+
+    fun updateAutoCompleteAdapter(data: Array<String>, searchTicker: AutoCompleteTextView) {
+        autocompleteData.clear()
+        autocompleteData.addAll(data)
+        setAutoCompleteAdapter(searchTicker)
+    }
+
+    fun setAutoCompleteAdapter(searchTicker: AutoCompleteTextView) {
+        autoCompleteAdapter = ArrayAdapter(applicationContext, android.R.layout.select_dialog_item, autocompleteData)
         searchTicker.threshold = 1
-        searchTicker.setAdapter(adapter)
+        searchTicker.setAdapter(autoCompleteAdapter)
+        searchTicker.refreshAutoCompleteResults()
+    }
+
+    fun setAdapterAndItemClickListener(searchTicker: AutoCompleteTextView) {
+        setAutoCompleteAdapter(searchTicker)
         searchTicker.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
-            searchTicker.setText(modifyAutocompleteSelectedOption(data[pos]))
+            searchTicker.setText(modifyAutocompleteSelectedOption(autocompleteData.get(pos)))
             searchTicker.setSelection(searchTicker.length())
             hideKeyboard(applicationContext, searchTicker)
             searchTicker.clearFocus()
@@ -76,7 +142,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun modifyAutocompleteSelectedOption(value: String): String {
-        return "abcd"
+        return value.split("|")[0].trim()
     }
 
     fun setCurrentDate(todayText: TextView) {

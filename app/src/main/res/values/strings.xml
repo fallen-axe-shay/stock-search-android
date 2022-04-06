@@ -2,4 +2,15 @@
     <string name="app_name">Stocks</string>
     <string name="stock_app_shared_pref">jerry_stock_app_shared_pref</string>
     <string name="cash_balance">cash_balance</string>
+    <string name="server_url">https://my-csci-hw-9-backend.wl.r.appspot.com/</string>
+    <string name="autocomplete_api">api/getAutocompleteData/</string>
+    <string name="title_activity_stock_summary">StockSummary</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>
