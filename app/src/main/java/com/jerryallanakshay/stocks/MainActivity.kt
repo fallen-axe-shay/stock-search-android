@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -134,11 +135,25 @@ class MainActivity : AppCompatActivity() {
     fun setAdapterAndItemClickListener(searchTicker: AutoCompleteTextView) {
         setAutoCompleteAdapter(searchTicker)
         searchTicker.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
-            searchTicker.setText(modifyAutocompleteSelectedOption(autocompleteData.get(pos)))
+            val ticker = modifyAutocompleteSelectedOption(autocompleteData[pos])
+            searchTicker.setText(ticker)
             searchTicker.setSelection(searchTicker.length())
             hideKeyboard(applicationContext, searchTicker)
             searchTicker.clearFocus()
+            val intent = Intent(applicationContext, StockSummary::class.java).apply {
+                putExtra(resources.getString(R.string.intent_stock_summary), ticker)
+            }
+            startActivity(intent)
         }
+        searchTicker.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                //Perform Code
+                hideKeyboard(applicationContext, searchTicker)
+                searchTicker.clearFocus()
+                return@OnKeyListener true
+            }
+            false
+        })
     }
 
     fun modifyAutocompleteSelectedOption(value: String): String {

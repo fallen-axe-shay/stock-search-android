@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StockSummary">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/default_toolbar_layout">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/arrow_left"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:padding="5dp"
+                android:paddingStart="0dp"
+                android:id="@+id/back_arrow_stock_summary"
+                app:tint="@color/gray"/>
+
+            <TextView
+                android:paddingLeft="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textStyle="bold"
+                android:textColor="@color/dark_gray"
+                android:layout_centerVertical="true"
+                android:textSize="20dp"
+                android:layout_toRightOf="@id/back_arrow_stock_summary"
+                android:layout_toLeftOf="@id/star_btn"
+                android:id="@+id/stock_summary_ticker">
+            </TextView>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/star_outline"
+                app:tint="@color/red_tint"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="5dp"
+                android:id="@+id/star_btn"/>
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+</LinearLayout>

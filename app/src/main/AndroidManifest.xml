@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/new_launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Stocks.Launcher">
-
+        <activity
+            android:name=".StockSummary"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -21,7 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
