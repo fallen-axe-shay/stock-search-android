@@ -6,13 +6,14 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 
-class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, ItemTouchHelper.LEFT) {
 
     var mAdapter: WatchlistAdapter = adapter
     var blackIcon = ContextCompat.getDrawable(mAdapter.getContext(), R.drawable.delete)
@@ -31,7 +32,29 @@ class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.Si
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        TODO("Not yet implemented")
+        val from = viewHolder.adapterPosition
+        val to = target.adapterPosition
+        mAdapter.notifyItemMoved(from, to)
+        return true
+    }
+
+    override fun isLongPressDragEnabled(): Boolean {
+        // Allows for long click so items can be dragged, moved up or down in the list.
+        return true
+    }
+
+    override fun isItemViewSwipeEnabled(): Boolean {
+        // Allows items to be swiped left or right.
+        return true
+    }
+
+    override fun getMovementFlags(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder
+    ): Int {
+        val  dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END
+        val swipeFlags = ItemTouchHelper.LEFT
+        return makeMovementFlags(dragFlags, swipeFlags)
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
