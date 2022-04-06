@@ -1,5 +1,6 @@
 package com.jerryallanakshay.stocks
 
+import android.content.Intent
 import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
             val bracketSymbol: TextView = view.findViewById(R.id.bracket_symbol)
             val bracketSymbolClose: TextView = view.findViewById(R.id.bracket_symbol_close)
             val trendingSymbol: ImageView = view.findViewById(R.id.trending_symbol)
+            val chevronSymbol: ImageView = view.findViewById(R.id.chevron_symbol)
         }
 
         // Create new views (invoked by the layout manager)
@@ -58,6 +60,15 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                 viewHolder.trendingSymbol.visibility = View.GONE
                 setColors(viewHolder, R.color.red_tint)
             }
+
+            viewHolder.chevronSymbol.setOnClickListener {
+                val intent = Intent(viewHolder.chevronSymbol.context, StockSummary::class.java).apply {
+                    putExtra(viewHolder.chevronSymbol.resources.getString(R.string.intent_stock_summary), dataSet?.get(position)?.ticker)
+                }
+                viewHolder.chevronSymbol.context.startActivity(intent)
+            }
+
+
         }
 
     fun setColors(viewHolder: ViewHolder, color: Int) {

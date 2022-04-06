@@ -145,7 +145,8 @@
             android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:src="@drawable/chevron_right"
-            app:tint="@color/dark_gray"/>
+            app:tint="@color/dark_gray"
+            android:id="@+id/chevron_symbol"/>
 
     </RelativeLayout>
 
