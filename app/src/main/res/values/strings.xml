@@ -5,6 +5,7 @@
     <string name="watchlist">watchlist</string>
     <string name="server_url">https://my-csci-hw-9-backend.wl.r.appspot.com/</string>
     <string name="autocomplete_api">api/getAutocompleteData/</string>
+    <string name="profile_and_quote_api">api/getCompanyProfileAndQuote/</string>
     <string name="title_activity_stock_summary">StockSummary</string>
     <string name="intent_stock_summary">com.jerryallanakshay.stocks.STOCK</string>
 </resources>

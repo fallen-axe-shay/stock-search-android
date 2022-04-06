@@ -11,4 +11,5 @@
     <color name="dark_gray">#4E4E4E</color>
     <color name="gray_bg">#CCCCCC</color>
     <color name="red_tint">#F32334</color>
+    <color name="green_tint">#19AA00</color>
 </resources>

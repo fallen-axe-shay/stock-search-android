@@ -14,17 +14,22 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
+import org.json.JSONTokener
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +37,10 @@ class MainActivity : AppCompatActivity() {
     private var queue: RequestQueue? = null
     private var autocompleteData: MutableList<String> = mutableListOf<String>()
     private var autoCompleteAdapter: ArrayAdapter<String>? = null
+    private var watchlistArrayList: ArrayList<FavoritesPortfolioDataModel>? = ArrayList()
+    private var watchlistAdapter: WatchlistAdapter? = null
+    private var requestCounter: Int = 0
+    private var completedRequests: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -50,6 +59,9 @@ class MainActivity : AppCompatActivity() {
         val finnhubLinkText = findViewById<TextView>(R.id.finnhub_link)
         val currentCashBalance = findViewById<TextView>(R.id.current_cash_balance)
         val todayText = findViewById<TextView>(R.id.date_today)
+        val watchlistList = findViewById<RecyclerView>(R.id.favorites_list)
+        val pageLoader = findViewById<ProgressBar>(R.id.page_loader)
+        val pageContent = findViewById<RelativeLayout>(R.id.page_content)
 
         val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
 
@@ -58,6 +70,8 @@ class MainActivity : AppCompatActivity() {
 
         initializeRequestQueue()
         setAutoCompleteAPICalls(searchTicker)
+
+        setWatchlistRecyclerView(watchlistList, sharedPref, pageLoader, pageContent)
 
         setCurrentDate(todayText)
         getSetCashBalance(sharedPref, currentCashBalance)
@@ -80,6 +94,48 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    }
+
+    private fun setWatchlistRecyclerView(watchlistList: RecyclerView, sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
+        val linearLayoutManager = LinearLayoutManager(applicationContext)
+        watchlistList.layoutManager = linearLayoutManager
+        watchlistAdapter = WatchlistAdapter(watchlistArrayList)
+        watchlistList.adapter = watchlistAdapter
+        watchlistList.addItemDecoration(DividerItemDecoration(watchlistList.context, DividerItemDecoration.VERTICAL))
+        fetchFavoritesData(sharedPref, pageLoader, pageContent)
+    }
+
+    fun fetchFavoritesData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
+        val prefData = sharedPref.getString(getString(R.string.watchlist), "[]")
+        val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
+        for(i in 0 until jsonArray.length()) {
+            requestCounter++
+            makePortfolioAndStockRequest(jsonArray.getString(i), pageLoader, pageContent)
+        }
+    }
+
+    fun makePortfolioAndStockRequest(ticker: String, pageLoader: ProgressBar, pageContent: RelativeLayout) {
+        val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$ticker"
+        val jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+               watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), response.getString("name"), response.getString("c").toDouble(), response.getString("d").toDouble(), response.getString("dp").toDouble()))
+                watchlistAdapter?.notifyDataSetChanged()
+                completedRequests++
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /* Do nothing */ })
+        queue?.add(jsonObjectRequest)
+    }
+
+    fun checkAndTogglePageVisibility(pageLoader: ProgressBar, pageContent: RelativeLayout) {
+        if(requestCounter==completedRequests) {
+            pageLoader.visibility = View.GONE
+            pageContent.visibility = View.VISIBLE
+        } else {
+            pageLoader.visibility = View.VISIBLE
+            pageContent.visibility = View.INVISIBLE
+        }
     }
 
     private fun EditText.autocapitalize() {

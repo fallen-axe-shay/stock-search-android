@@ -103,7 +103,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:id="@+id/page_content"
+            android:visibility="invisible">
 
             <TextView
                 android:layout_width="match_parent"
@@ -246,23 +248,29 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/favorites_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/portfolio_summary"
+                android:background="@color/gray_bg"
+                android:padding="10dp"
+                android:paddingStart="20dp"
                 android:text="favorites"
                 android:textAllCaps="true"
                 android:textColor="@color/black"
-                android:background="@color/gray_bg"
-                android:layout_below="@id/portfolio_summary"
-                android:textStyle="bold"
-                android:padding="10dp"
-                android:paddingStart="20dp"
-                android:id="@+id/favorites_banner"/>
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/favorites_banner"
+                android:id="@+id/favorites_list"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Powered by Finnhub"
-                android:layout_below="@id/favorites_banner"
+                android:layout_below="@id/favorites_list"
                 android:gravity="center"
                 android:padding="20dp"
                 android:textStyle="italic"

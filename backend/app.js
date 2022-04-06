@@ -54,6 +54,31 @@ app.get('/api/getCompanyQuote/:ticker', (req, res) => {
   })
 });
 
+app.get('/api/getCompanyProfileAndQuote/:ticker', (req, res) => {
+  let data = {
+    token: _GLOBAL.FH_API_KEY,
+    symbol: req.params.ticker
+  }
+  axios.get('https://finnhub.io/api/v1/stock/profile2', {params: data})
+  .then(fhRes1 => {
+    let data = {
+      token: _GLOBAL.FH_API_KEY,
+      symbol: req.params.ticker
+    }
+    axios.get('https://finnhub.io/api/v1/quote', {params: data})
+    .then(fhRes2 => {
+      Object.assign(fhRes1.data, fhRes2.data)
+      res.status(fhRes1.status).json(fhRes1.data);
+    })
+    .catch(error => {
+      res.status(500).json({message: error});
+    })
+  })
+  .catch(error => {
+    res.status(500).json({message: error});
+  })
+});
+
 app.get('/api/getCompanyPeers/:ticker', (req, res) => {
   let data = {
     token: _GLOBAL.FH_API_KEY,
