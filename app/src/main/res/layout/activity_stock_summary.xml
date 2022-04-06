@@ -243,7 +243,8 @@
                     app:tabGravity="fill"
                     app:tabMode="fixed"
                     app:tabTextColor="@color/purple_500"
-                    app:tabIndicatorColor="@color/purple_500"/>
+                    app:tabIndicatorColor="@color/purple_500"
+                    app:tabIconTint="@color/tab_tint_color_selector" />
 
 
             </LinearLayout>

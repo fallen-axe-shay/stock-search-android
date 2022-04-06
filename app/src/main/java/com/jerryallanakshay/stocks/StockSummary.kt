@@ -2,19 +2,24 @@ package com.jerryallanakshay.stocks
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 import org.json.JSONTokener
 
+
 class StockSummary : AppCompatActivity() {
 
     private var stockSymbol: String? = null
+    val ICONS = intArrayOf(
+        R.drawable.chart_line,
+        R.drawable.clock
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -51,14 +56,14 @@ class StockSummary : AppCompatActivity() {
 
     fun setupViewPager(adapter: ViewPagerAdapter, pager: ViewPager, tab: TabLayout) {
         // add fragment to the list
-        adapter.addFragment(StockSummaryChart(), "GeeksForGeeks")
-        adapter.addFragment(StockHistoryChart(), "Code Chef")
-
+        adapter.addFragment(StockSummaryChart(), "")
+        adapter.addFragment(StockHistoryChart(), "")
         // Adding the Adapter to the ViewPager
         pager.adapter = adapter
-
         // bind the viewPager with the TabLayout.
         tab.setupWithViewPager(pager)
+        tab.getTabAt(0)!!.setIcon(ICONS[0]);
+        tab.getTabAt(1)!!.setIcon(ICONS[1]);
     }
 
     fun toggleStar(starBtn: ImageView, sharedPref: SharedPreferences) {
