@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPref = activity.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
 
+        searchTicker.autocapitalize()
         setAdapterAndItemClickListener(searchTicker)
 
         initializeRequestQueue()
@@ -78,6 +80,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    }
+
+    private fun EditText.autocapitalize() {
+        val allCapsFilter = InputFilter.AllCaps()
+        filters += allCapsFilter
     }
 
 

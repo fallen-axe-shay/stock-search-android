@@ -2,6 +2,7 @@
     <string name="app_name">Stocks</string>
     <string name="stock_app_shared_pref">jerry_stock_app_shared_pref</string>
     <string name="cash_balance">cash_balance</string>
+    <string name="watchlist">watchlist</string>
     <string name="server_url">https://my-csci-hw-9-backend.wl.r.appspot.com/</string>
     <string name="autocomplete_api">api/getAutocompleteData/</string>
     <string name="title_activity_stock_summary">StockSummary</string>
