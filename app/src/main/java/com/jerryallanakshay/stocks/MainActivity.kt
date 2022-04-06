@@ -41,8 +41,10 @@ class MainActivity : AppCompatActivity() {
     private var watchlistAdapter: WatchlistAdapter? = null
     private var requestCounter: Int = 0
     private var completedRequests: Int = 0
+    private var shouldExecuteOnResume: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        shouldExecuteOnResume = false
         setTheme(R.style.Theme_Stocks)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -106,6 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchFavoritesData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
+        watchlistArrayList?.clear()
         val prefData = sharedPref.getString(getString(R.string.watchlist), "[]")
         val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
         for(i in 0 until jsonArray.length()) {
@@ -132,9 +135,6 @@ class MainActivity : AppCompatActivity() {
         if(requestCounter==completedRequests) {
             pageLoader.visibility = View.GONE
             pageContent.visibility = View.VISIBLE
-        } else {
-            pageLoader.visibility = View.VISIBLE
-            pageContent.visibility = View.INVISIBLE
         }
     }
 
@@ -270,6 +270,21 @@ class MainActivity : AppCompatActivity() {
         // open the soft keyboard
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(shouldExecuteOnResume) {
+            val sharedPref = this.getSharedPreferences(
+                getString(R.string.stock_app_shared_pref),
+                Context.MODE_PRIVATE
+            )
+            val pageLoader = findViewById<ProgressBar>(R.id.page_loader)
+            val pageContent = findViewById<RelativeLayout>(R.id.page_content)
+            fetchFavoritesData(sharedPref, pageLoader, pageContent)
+        } else {
+            shouldExecuteOnResume = true
+        }
     }
 
 

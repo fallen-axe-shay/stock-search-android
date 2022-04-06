@@ -146,7 +146,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/chevron_right"
             app:tint="@color/dark_gray"/>
-        
+
     </RelativeLayout>
 
 </LinearLayout>
