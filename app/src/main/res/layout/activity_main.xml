@@ -97,13 +97,14 @@
 
         <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ProgressBar
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/page_loader"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:layout_marginTop="600dp"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -122,10 +123,10 @@
                 android:textColor="@color/gray"/>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/favorites_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/date_today"
-                android:id="@+id/favorites_list"/>
+                android:layout_below="@id/date_today" />
 
             <TextView
                 android:layout_width="match_parent"
