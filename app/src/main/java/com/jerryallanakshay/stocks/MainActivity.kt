@@ -177,7 +177,9 @@ class MainActivity : AppCompatActivity() {
                 queue?.cancelAll(s)
             }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) { }
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                searchTicker.dismissDropDown()
+            }
 
         })
     }
