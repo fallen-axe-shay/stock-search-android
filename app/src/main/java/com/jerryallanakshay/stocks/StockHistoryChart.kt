@@ -25,7 +25,6 @@ class StockHistoryChart : Fragment() {
         webView.settings.javaScriptEnabled = true
         val url = "${context?.getString(R.string.server_url)}${context?.getString(R.string.two_years_historical_data)}${ticker}/${time}"
         webView.loadUrl(url)
-        Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
         return root
     }
 
