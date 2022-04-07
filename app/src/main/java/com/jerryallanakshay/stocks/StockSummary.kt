@@ -13,10 +13,12 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
+import org.w3c.dom.Text
 import java.util.*
 
 
@@ -37,6 +39,12 @@ class StockSummary : AppCompatActivity() {
     private lateinit var adapter: ViewPagerAdapter
     private lateinit var pager: ViewPager
     private lateinit var tab: TabLayout
+    private lateinit var logo: ImageView
+    private lateinit var companySymbol: TextView
+    private lateinit var companyName: TextView
+    private lateinit var price: TextView
+    private lateinit var change: TextView
+    private lateinit var changePercent: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -50,6 +58,12 @@ class StockSummary : AppCompatActivity() {
         tab = findViewById<TabLayout>(R.id.tabs)
         val pageLoader = findViewById<ProgressBar>(R.id.stock_summary_page_loader)
         val pageContent = findViewById<LinearLayout>(R.id.stock_summary_content)
+        logo = findViewById(R.id.stock_summary_ticker_image)
+        companyName = findViewById(R.id.stock_summary_ticker_name)
+        companySymbol = findViewById(R.id.stock_summary_ticker_symbol)
+        price = findViewById(R.id.stock_summary_price)
+        change = findViewById(R.id.stock_change)
+        changePercent = findViewById(R.id.stock_change_percent)
 
         val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
         queue = Volley.newRequestQueue(this)
@@ -125,9 +139,17 @@ class StockSummary : AppCompatActivity() {
     fun checkAndTogglePageVisibility(pageLoader: ProgressBar, pageContent: LinearLayout) {
         if(requests==completedRequests) {
             setupViewPager()
+            displayData()
             pageLoader.visibility = View.GONE
             pageContent.visibility = View.VISIBLE
         }
+    }
+
+    fun displayData() {
+        Glide.with(applicationContext)
+            .load(profileAndPriceData.getString("logo"))
+            .into(logo)
+
     }
 
     fun setupViewPager() {
