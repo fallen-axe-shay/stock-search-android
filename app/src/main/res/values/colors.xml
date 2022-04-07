@@ -12,4 +12,6 @@
     <color name="gray_bg">#CCCCCC</color>
     <color name="red_tint">#F32334</color>
     <color name="green_tint">#19AA00</color>
+    <color name="table_bg">#CFCFCF</color>
+    <color name="table_cell_bg">#E8E8E8</color>
 </resources>

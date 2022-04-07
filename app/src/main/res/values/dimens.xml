@@ -3,4 +3,6 @@
     <dimen name="text_size_params">15dp</dimen>
     <dimen name="text_size_headers">20dp</dimen>
     <dimen name="param_min_width">160dp</dimen>
+    <dimen name="table_cell_margin">2dp</dimen>
+    <dimen name="table_cell_padding">5dp</dimen>
 </resources>
