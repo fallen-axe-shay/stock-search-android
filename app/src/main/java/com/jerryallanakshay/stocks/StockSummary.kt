@@ -3,14 +3,21 @@ package com.jerryallanakshay.stocks
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.util.Log
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
+import org.json.JSONObject
 import org.json.JSONTokener
+import java.util.*
 
 
 class StockSummary : AppCompatActivity() {
@@ -20,6 +27,16 @@ class StockSummary : AppCompatActivity() {
         R.drawable.chart_line,
         R.drawable.clock
     )
+    private lateinit var queue: RequestQueue
+    private lateinit var profileAndPriceData: JSONObject
+    private lateinit var newsData: JSONArray
+    private lateinit var recentHistory: JSONObject
+    private lateinit var largeHistory: JSONObject
+    private var requests = 0
+    private var completedRequests = 0
+    private lateinit var adapter: ViewPagerAdapter
+    private lateinit var pager: ViewPager
+    private lateinit var tab: TabLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -29,15 +46,15 @@ class StockSummary : AppCompatActivity() {
         val stockTicker = findViewById<TextView>(R.id.stock_summary_ticker)
         val starBtn = findViewById<ImageView>(R.id.star_btn)
         val backBtn = findViewById<ImageView>(R.id.back_arrow_stock_summary)
-        val pager = findViewById<ViewPager>(R.id.viewPager)
-        val tab = findViewById<TabLayout>(R.id.tabs)
+        pager = findViewById<ViewPager>(R.id.viewPager)
+        tab = findViewById<TabLayout>(R.id.tabs)
+        val pageLoader = findViewById<ProgressBar>(R.id.stock_summary_page_loader)
+        val pageContent = findViewById<LinearLayout>(R.id.stock_summary_content)
 
         val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+        queue = Volley.newRequestQueue(this)
 
-        val adapter = ViewPagerAdapter(supportFragmentManager)
-
-        setupViewPager(adapter, pager, tab)
-
+        adapter = ViewPagerAdapter(supportFragmentManager)
 
         stockSymbol = intent.getStringExtra(resources.getString(R.string.intent_stock_summary))
         stockTicker.text = stockSymbol
@@ -52,12 +69,71 @@ class StockSummary : AppCompatActivity() {
             toggleStar(starBtn, sharedPref)
         }
 
+        fetchSummaryData(pageLoader, pageContent)
+
     }
 
-    fun setupViewPager(adapter: ViewPagerAdapter, pager: ViewPager, tab: TabLayout) {
+    fun fetchRecentHistoryData(closeTime: Long, pageLoader: ProgressBar, pageContent: LinearLayout) {
+        val calendar = Calendar.getInstance()
+        val now = (calendar.timeInMillis)/1000
+        var timeToSend = closeTime
+        if((now-closeTime) < (5*60)) {
+            timeToSend = now
+        }
+        requests++
+        val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.six_hours_historical_data)}$stockSymbol/$timeToSend"
+        var jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                recentHistory = response
+                completedRequests++
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /* Do nothing */})
+        queue?.add(jsonObjectRequest)
+    }
+
+    fun fetchSummaryData(pageLoader: ProgressBar, pageContent: LinearLayout) {
+
+        var url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$stockSymbol"
+        requests++
+        var jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                profileAndPriceData = response
+                completedRequests++
+                fetchRecentHistoryData(profileAndPriceData.getLong("t"), pageLoader, pageContent)
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /*Do nothing*/ })
+        queue?.add(jsonObjectRequest)
+
+        url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.news_api)}$stockSymbol"
+        requests++
+        var jsonArrayRequest = JsonArrayRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                newsData = response
+                completedRequests++
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /* Do nothing */ })
+        queue?.add(jsonArrayRequest)
+
+    }
+
+    fun checkAndTogglePageVisibility(pageLoader: ProgressBar, pageContent: LinearLayout) {
+        if(requests==completedRequests) {
+            setupViewPager()
+            pageLoader.visibility = View.GONE
+            pageContent.visibility = View.VISIBLE
+        }
+    }
+
+    fun setupViewPager() {
         // add fragment to the list
-        adapter.addFragment(StockSummaryChart(), "")
-        adapter.addFragment(StockHistoryChart(), "")
+        adapter.addFragment(StockSummaryChart.newInstance(stockSymbol!!, recentHistory, profileAndPriceData.getDouble("d")), "")
+        adapter.addFragment(StockHistoryChart.newInstance(stockSymbol!!), "")
         // Adding the Adapter to the ViewPager
         pager.adapter = adapter
         // bind the viewPager with the TabLayout.
