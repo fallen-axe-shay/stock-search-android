@@ -19,6 +19,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
 import org.w3c.dom.Text
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 
@@ -45,6 +47,10 @@ class StockSummary : AppCompatActivity() {
     private lateinit var price: TextView
     private lateinit var change: TextView
     private lateinit var changePercent: TextView
+    private lateinit var trendingSymbol: ImageView
+    private lateinit var dollarSymbol: TextView
+    private lateinit var bracketSymbol: TextView
+    private lateinit var bracketSymbolClose: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -64,6 +70,10 @@ class StockSummary : AppCompatActivity() {
         price = findViewById(R.id.stock_summary_price)
         change = findViewById(R.id.stock_change)
         changePercent = findViewById(R.id.stock_change_percent)
+        trendingSymbol = findViewById(R.id.trending_symbol)
+        dollarSymbol = findViewById(R.id.dollar_symbol)
+        bracketSymbol = findViewById(R.id.bracket_symbol)
+        bracketSymbolClose = findViewById(R.id.bracket_symbol_close)
 
         val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
         queue = Volley.newRequestQueue(this)
@@ -136,6 +146,10 @@ class StockSummary : AppCompatActivity() {
 
     }
 
+    private fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
+        return BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN)
+    }
+
     fun checkAndTogglePageVisibility(pageLoader: ProgressBar, pageContent: LinearLayout) {
         if(requests==completedRequests) {
             setupViewPager()
@@ -149,7 +163,32 @@ class StockSummary : AppCompatActivity() {
         Glide.with(applicationContext)
             .load(profileAndPriceData.getString("logo"))
             .into(logo)
+        price.text = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c")).toString()
+        change.text = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("d")).toString()
+        changePercent.text = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("dp")).toString()
+        companyName.text = profileAndPriceData.getString("name")
+        companySymbol.text = profileAndPriceData.getString("ticker")
+        if(profileAndPriceData.getDouble("d") > 0) {
+            trendingSymbol.visibility = View.VISIBLE
+            trendingSymbol.setImageResource(R.drawable.trending_up)
+            setColors(R.color.green_tint)
+        } else if(profileAndPriceData.getDouble("d") < 0) {
+            trendingSymbol.visibility = View.VISIBLE
+            trendingSymbol.setImageResource(R.drawable.trending_down)
+            setColors(R.color.red_tint)
+        } else {
+            trendingSymbol.visibility = View.GONE
+            setColors(R.color.black)
+        }
+    }
 
+    fun setColors(color: Int) {
+        trendingSymbol.setColorFilter(resources.getColor(color))
+        change.setTextColor(resources.getColor(color))
+        changePercent.setTextColor(resources.getColor(color))
+        dollarSymbol.setTextColor(resources.getColor(color))
+        bracketSymbol.setTextColor(resources.getColor(color))
+        bracketSymbolClose.setTextColor(resources.getColor(color))
     }
 
     fun setupViewPager() {

@@ -60,6 +60,12 @@ class StockSummaryChart : Fragment() {
         yAxisTitle.text = ""
         xAxis.title = xAxisTitle
         yAxis.title = yAxisTitle
+        val yAxisLabel = HILabels()
+        yAxisLabel.align = "right"
+        yAxisLabel.x = -3
+        yAxisLabel.y = -5
+        yAxis.labels = yAxisLabel
+        yAxis.opposite = true
         val crosshair = HICrosshair()
         xAxis.crosshair = crosshair
         xAxis.type = "datetime"

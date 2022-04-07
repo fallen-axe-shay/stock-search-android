@@ -92,7 +92,7 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                         setColors(viewHolder, R.color.red_tint)
                     } else {
                         viewHolder.trendingSymbol.visibility = View.GONE
-                        setColors(viewHolder, R.color.red_tint)
+                        setColors(viewHolder, R.color.black)
                     }
 
                     viewHolder.chevronSymbol.setOnClickListener {
