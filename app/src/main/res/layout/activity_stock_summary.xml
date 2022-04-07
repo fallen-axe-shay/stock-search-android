@@ -861,15 +861,42 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginTop="10dp">
+
+                        <com.highsoft.highcharts.core.HIChartView
+                            android:id="@+id/recommendation_trends"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            android:padding="10dp"/>
+
+                        <com.highsoft.highcharts.core.HIChartView
+                            android:id="@+id/history_eps_surprises"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            android:padding="10dp"/>
+
+                    </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Recommendation Trends"
+                        android:text="News"
                         android:textSize="@dimen/text_size_headers"
                         android:textColor="@color/gray"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:paddingVertical="10dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/news_list"
+                        android:scrollbars="none"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"/>
 
                 </LinearLayout>
 
