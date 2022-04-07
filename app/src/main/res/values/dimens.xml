@@ -2,4 +2,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_size_params">15dp</dimen>
     <dimen name="text_size_headers">20dp</dimen>
+    <dimen name="param_min_width">160dp</dimen>
 </resources>

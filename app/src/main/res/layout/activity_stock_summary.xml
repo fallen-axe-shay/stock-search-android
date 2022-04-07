@@ -288,7 +288,7 @@
                                     android:text="Shares Owned :"
                                     android:textStyle="bold"
                                     android:textColor="@color/gray"
-                                    android:minWidth="160dp"
+                                    android:minWidth="@dimen/param_min_width"
                                     android:textSize="@dimen/text_size_params"/>
 
                                 <TextView
@@ -316,7 +316,7 @@
                                     android:text="Avg. Cost / Share :"
                                     android:textStyle="bold"
                                     android:textColor="@color/gray"
-                                    android:minWidth="160dp"
+                                    android:minWidth="@dimen/param_min_width"
                                     android:textSize="@dimen/text_size_params"/>
 
                                 <TextView
@@ -344,7 +344,7 @@
                                     android:text="Total Cost :"
                                     android:textStyle="bold"
                                     android:textColor="@color/gray"
-                                    android:minWidth="160dp"
+                                    android:minWidth="@dimen/param_min_width"
                                     android:textSize="@dimen/text_size_params"/>
 
                                 <TextView
@@ -372,7 +372,7 @@
                                     android:text="Change :"
                                     android:textStyle="bold"
                                     android:textColor="@color/gray"
-                                    android:minWidth="160dp"
+                                    android:minWidth="@dimen/param_min_width"
                                     android:textSize="@dimen/text_size_params"/>
 
                                 <TextView
@@ -400,7 +400,7 @@
                                     android:text="Market Value :"
                                     android:textStyle="bold"
                                     android:textColor="@color/gray"
-                                    android:minWidth="160dp"
+                                    android:minWidth="@dimen/param_min_width"
                                     android:textSize="@dimen/text_size_params"/>
 
                                 <TextView
@@ -564,6 +564,116 @@
                                     android:id="@+id/prev_close"/>
 
                             </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="About"
+                        android:textSize="@dimen/text_size_headers"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:paddingVertical="10dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="IPO Start Date"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/text_size_params"
+                                android:textStyle="bold"
+                                android:paddingVertical="5dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="Industry"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/text_size_params"
+                                android:textStyle="bold"
+                                android:paddingVertical="5dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="Webpage"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/text_size_params"
+                                android:textStyle="bold"
+                                android:paddingVertical="5dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="Company Peers"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/text_size_params"
+                                android:textStyle="bold"
+                                android:paddingVertical="5dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="12-11-1980"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/text_size_params"
+                                android:textStyle="bold"
+                                android:paddingVertical="5dp"
+                                android:id="@+id/ipo_start_date"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="Technology"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/text_size_params"
+                                android:textStyle="bold"
+                                android:paddingVertical="5dp"
+                                android:id="@+id/industry"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/param_min_width"
+                                android:text="www.google.com"
+                                android:textSize="@dimen/text_size_params"
+                                android:paddingVertical="5dp"
+                                android:autoLink="web"
+                                android:id="@+id/webpage"/>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/peer_list"
+                                android:scrollbars="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"/>
 
                         </LinearLayout>
 

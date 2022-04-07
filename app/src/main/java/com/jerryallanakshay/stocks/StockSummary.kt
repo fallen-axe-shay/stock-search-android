@@ -3,10 +3,11 @@ package com.jerryallanakshay.stocks
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -18,10 +19,10 @@ import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.w3c.dom.Text
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class StockSummary : AppCompatActivity() {
@@ -35,6 +36,7 @@ class StockSummary : AppCompatActivity() {
     private lateinit var profileAndPriceData: JSONObject
     private lateinit var newsData: JSONArray
     private lateinit var recentHistory: JSONObject
+    private lateinit var peerData: JSONArray
     private var requests = 0
     private var completedRequests = 0
     private lateinit var adapter: ViewPagerAdapter
@@ -50,6 +52,10 @@ class StockSummary : AppCompatActivity() {
     private lateinit var dollarSymbol: TextView
     private lateinit var bracketSymbol: TextView
     private lateinit var bracketSymbolClose: TextView
+    private lateinit var peerRecycler: RecyclerView
+    private lateinit var peerRecyclerLayoutManager: LinearLayoutManager
+    private var peerList = ArrayList<String>()
+    private val peerAdapter = CompanyPeerAdapter(peerList)
     private var timeToSend = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +80,11 @@ class StockSummary : AppCompatActivity() {
         dollarSymbol = findViewById(R.id.dollar_symbol)
         bracketSymbol = findViewById(R.id.bracket_symbol)
         bracketSymbolClose = findViewById(R.id.bracket_symbol_close)
+
+        peerRecycler = findViewById<RecyclerView>(R.id.peer_list)
+        peerRecyclerLayoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.HORIZONTAL, false)
+        peerRecycler.layoutManager = peerRecyclerLayoutManager
+        peerRecycler.adapter = peerAdapter
 
         val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
         queue = Volley.newRequestQueue(this)
@@ -144,6 +155,18 @@ class StockSummary : AppCompatActivity() {
             { /* Do nothing */ })
         queue?.add(jsonArrayRequest)
 
+        url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.company_peer_api)}$stockSymbol"
+        requests++
+        jsonArrayRequest = JsonArrayRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                peerData = response
+                completedRequests++
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /* Do nothing */ })
+        queue?.add(jsonArrayRequest)
+
     }
 
     private fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
@@ -180,6 +203,16 @@ class StockSummary : AppCompatActivity() {
             trendingSymbol.visibility = View.GONE
             setColors(R.color.black)
         }
+        populatePeerList()
+    }
+
+    fun populatePeerList() {
+        peerList.clear()
+        for(i in 0 until peerData.length()) {
+            if(peerData.getString(i).contains(".")) continue
+            peerList.add(peerData.getString(i))
+        }
+        peerAdapter.notifyDataSetChanged()
     }
 
     fun setColors(color: Int) {
