@@ -88,7 +88,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         closeSearchBtn.setOnClickListener {
-            showNormalAppBar(searchToolbarLyt, toolbarLyt, searchTicker)
+            //showNormalAppBar(searchToolbarLyt, toolbarLyt, searchTicker)
+            searchTicker.setText("")
+            searchTicker.dismissDropDown()
         }
 
         finnhubLinkText.setOnClickListener {

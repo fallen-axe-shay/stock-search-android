@@ -150,6 +150,7 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
         }
 
         fun notifyDataSetChangedWithSort() {
+            dataSet?.sortBy { item -> item.ticker }
             dataSet?.sortBy { item -> item.type }
             notifyDataSetChanged()
         }
