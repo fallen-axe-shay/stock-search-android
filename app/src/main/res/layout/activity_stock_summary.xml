@@ -475,6 +475,34 @@
 
                             </LinearLayout>
 
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingHorizontal="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$0"
+                                    android:textSize="@dimen/text_size_params"
+                                    android:textColor="@color/gray"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="5dp"
+                                    android:id="@+id/open_price"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$0"
+                                    android:textSize="@dimen/text_size_params"
+                                    android:textColor="@color/gray"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="5dp"
+                                    android:id="@+id/low_price"/>
+
+                            </LinearLayout>
+
                         </LinearLayout>
 
                         <LinearLayout
@@ -482,6 +510,60 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:layout_weight="1">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingHorizontal="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="High Price :"
+                                    android:textSize="@dimen/text_size_params"
+                                    android:textColor="@color/gray"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="5dp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Prev. Close :"
+                                    android:textSize="@dimen/text_size_params"
+                                    android:textColor="@color/gray"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="5dp"/>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingHorizontal="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$0"
+                                    android:textSize="@dimen/text_size_params"
+                                    android:textColor="@color/gray"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="5dp"
+                                    android:id="@+id/high_price"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$0"
+                                    android:textSize="@dimen/text_size_params"
+                                    android:textColor="@color/gray"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="5dp"
+                                    android:id="@+id/prev_close"/>
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
