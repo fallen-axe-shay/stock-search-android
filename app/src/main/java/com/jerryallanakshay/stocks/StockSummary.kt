@@ -16,6 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import com.highsoft.highcharts.core.HIChartView
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -23,6 +24,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class StockSummary : AppCompatActivity() {
@@ -54,9 +56,33 @@ class StockSummary : AppCompatActivity() {
     private lateinit var bracketSymbolClose: TextView
     private lateinit var peerRecycler: RecyclerView
     private lateinit var peerRecyclerLayoutManager: LinearLayoutManager
+    private lateinit var sharesOwned: TextView
+    private lateinit var avgCost: TextView
+    private lateinit var totalCost: TextView
+    private lateinit var changeCost: TextView
+    private lateinit var marketValue: TextView
+    private lateinit var openPrice: TextView
+    private lateinit var lowPrice: TextView
+    private lateinit var highPrice: TextView
+    private lateinit var closePrice: TextView
+    private lateinit var ipoStart: TextView
+    private lateinit var industry: TextView
+    private lateinit var webpage: TextView
+    private lateinit var tableCompany: TextView
+    private lateinit var tableRedTot: TextView
+    private lateinit var tableRedPos: TextView
+    private lateinit var tableRedNeg: TextView
+    private lateinit var tableTwiTot: TextView
+    private lateinit var tableTwiNeg: TextView
+    private lateinit var tableTwiPos: TextView
+    private lateinit var recChart: HIChartView
+    private lateinit var surpriseChart: HIChartView
+    private lateinit var newsRecycler: RecyclerView
     private var peerList = ArrayList<String>()
     private val peerAdapter = CompanyPeerAdapter(peerList)
     private var timeToSend = 0L
+    private var redditMentions = HashMap<String, Int>()
+    private var twitterMentions = HashMap<String, Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -80,8 +106,30 @@ class StockSummary : AppCompatActivity() {
         dollarSymbol = findViewById(R.id.dollar_symbol)
         bracketSymbol = findViewById(R.id.bracket_symbol)
         bracketSymbolClose = findViewById(R.id.bracket_symbol_close)
-
         peerRecycler = findViewById<RecyclerView>(R.id.peer_list)
+        sharesOwned = findViewById(R.id.shares)
+        avgCost = findViewById(R.id.avg_cost)
+        totalCost = findViewById(R.id.total_cost)
+        changeCost = findViewById(R.id.change)
+        marketValue = findViewById(R.id.market_value)
+        openPrice = findViewById(R.id.open_price)
+        lowPrice = findViewById(R.id.low_price)
+        highPrice = findViewById(R.id.high_price)
+        closePrice = findViewById(R.id.prev_close)
+        ipoStart = findViewById(R.id.ipo_start_date)
+        industry = findViewById(R.id.industry)
+        webpage = findViewById(R.id.webpage)
+        tableCompany = findViewById(R.id.table_company_name)
+        tableRedTot = findViewById(R.id.reddit_total_mentions)
+        tableRedPos = findViewById(R.id.reddit_positive_mentions)
+        tableRedNeg = findViewById(R.id.reddit_negative_mentions)
+        tableTwiTot = findViewById(R.id.twitter_total_mentions)
+        tableTwiNeg = findViewById(R.id.twitter_negative_mentions)
+        tableTwiPos = findViewById(R.id.twitter_positive_mentions)
+        recChart = findViewById(R.id.recommendation_trends)
+        surpriseChart = findViewById(R.id.history_eps_surprises)
+        newsRecycler = findViewById(R.id.news_list)
+
         peerRecyclerLayoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.HORIZONTAL, false)
         peerRecycler.layoutManager = peerRecyclerLayoutManager
         peerRecycler.adapter = peerAdapter
@@ -167,6 +215,45 @@ class StockSummary : AppCompatActivity() {
             { /* Do nothing */ })
         queue?.add(jsonArrayRequest)
 
+        url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.social_sentiment_api)}$stockSymbol"
+        requests++
+        jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                aggregateSocialSentiments(response)
+                completedRequests++
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /* Do nothing */ })
+        queue?.add(jsonObjectRequest)
+
+    }
+
+    private fun aggregateSocialSentiments(data: JSONObject) {
+        val redditArray = data.getJSONArray("reddit")
+        val twitterArray = data.getJSONArray("twitter")
+        var redPos = 0
+        var redNeg = 0
+        var redTot = 0
+        var twiTot = 0
+        var twiPos = 0
+        var twiNeg = 0
+        for(i in 0 until redditArray.length()) {
+            redTot += (redditArray.getJSONObject(i).getInt("mention"))
+            redPos += (redditArray.getJSONObject(i).getInt("positiveMention"))
+            redNeg += (redditArray.getJSONObject(i).getInt("negativeMention"))
+        }
+        for(i in 0 until twitterArray.length()) {
+            twiTot += (twitterArray.getJSONObject(i).getInt("mention"))
+            twiPos += (twitterArray.getJSONObject(i).getInt("positiveMention"))
+            twiNeg += (twitterArray.getJSONObject(i).getInt("negativeMention"))
+        }
+        twitterMentions["total"] = twiTot
+        twitterMentions["positive"] = twiPos
+        twitterMentions["negative"] = twiNeg
+        redditMentions["total"] = redTot
+        redditMentions["positive"] = redPos
+        redditMentions["negative"] = redNeg
     }
 
     private fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
@@ -204,6 +291,21 @@ class StockSummary : AppCompatActivity() {
             setColors(R.color.black)
         }
         populatePeerList()
+        openPrice.text = "$" + roundToTwoDecimalPlaces(profileAndPriceData.getString("o").toDouble()).toString()
+        lowPrice.text = "$" + roundToTwoDecimalPlaces(profileAndPriceData.getString("l").toDouble()).toString()
+        highPrice.text = "$" + roundToTwoDecimalPlaces(profileAndPriceData.getString("h").toDouble()).toString()
+        closePrice.text = "$" + roundToTwoDecimalPlaces(profileAndPriceData.getString("c").toDouble()).toString()
+        var dateSplit = profileAndPriceData.getString("ipo").split("-")
+        ipoStart.text = "${dateSplit[2]}-${dateSplit[1]}-${dateSplit[0]}"
+        industry.text = profileAndPriceData.getString("finnhubIndustry")
+        webpage.text = profileAndPriceData.getString("weburl")
+        companyName.text = profileAndPriceData.getString("name")
+        tableRedTot.text = redditMentions["total"].toString()
+        tableRedPos.text = redditMentions["positive"].toString()
+        tableRedNeg.text = redditMentions["negative"].toString()
+        tableTwiTot.text = twitterMentions["total"].toString()
+        tableTwiPos.text = twitterMentions["positive"].toString()
+        tableTwiNeg.text = twitterMentions["negative"].toString()
     }
 
     fun populatePeerList() {

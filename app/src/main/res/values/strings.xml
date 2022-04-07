@@ -9,6 +9,7 @@
     <string name="news_api">api/getCompanyNews/</string>
     <string name="six_hours_historical_data">api/getCompanyHistoricalData/</string>
     <string name="company_peer_api">api/getCompanyPeers/</string>
+    <string name="social_sentiment_api">api/getCompanySocialSentiment/</string>
     <string name="two_years_historical_data">chart/history/</string>
     <string name="title_activity_stock_summary">StockSummary</string>
     <string name="intent_stock_summary">com.jerryallanakshay.stocks.STOCK</string>
