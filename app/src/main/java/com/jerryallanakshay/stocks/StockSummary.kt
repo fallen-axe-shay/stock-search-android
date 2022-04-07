@@ -35,7 +35,6 @@ class StockSummary : AppCompatActivity() {
     private lateinit var profileAndPriceData: JSONObject
     private lateinit var newsData: JSONArray
     private lateinit var recentHistory: JSONObject
-    private lateinit var largeHistory: JSONObject
     private var requests = 0
     private var completedRequests = 0
     private lateinit var adapter: ViewPagerAdapter
@@ -51,6 +50,7 @@ class StockSummary : AppCompatActivity() {
     private lateinit var dollarSymbol: TextView
     private lateinit var bracketSymbol: TextView
     private lateinit var bracketSymbolClose: TextView
+    private var timeToSend = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -100,12 +100,12 @@ class StockSummary : AppCompatActivity() {
     fun fetchRecentHistoryData(closeTime: Long, pageLoader: ProgressBar, pageContent: LinearLayout) {
         val calendar = Calendar.getInstance()
         val now = (calendar.timeInMillis)/1000
-        var timeToSend = closeTime
+        timeToSend = closeTime
         if((now-closeTime) < (5*60)) {
             timeToSend = now
         }
         requests++
-        val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.six_hours_historical_data)}$stockSymbol/$timeToSend"
+        var url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.six_hours_historical_data)}$stockSymbol/$timeToSend"
         var jsonObjectRequest = JsonObjectRequest (
             Request.Method.GET, url, null,
             { response ->
@@ -194,7 +194,7 @@ class StockSummary : AppCompatActivity() {
     fun setupViewPager() {
         // add fragment to the list
         adapter.addFragment(StockSummaryChart.newInstance(stockSymbol!!, recentHistory, profileAndPriceData.getDouble("d")), "")
-        adapter.addFragment(StockHistoryChart.newInstance(stockSymbol!!), "")
+        adapter.addFragment(StockHistoryChart.newInstance(stockSymbol!!, timeToSend), "")
         // Adding the Adapter to the ViewPager
         pager.adapter = adapter
         // bind the viewPager with the TabLayout.

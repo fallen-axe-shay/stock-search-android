@@ -9,8 +9,21 @@ const _GLOBAL = {
 }
 
 const app = express();
+const path = require('path');
 
 app.use(cors());
+
+app.get('/chart/history/:ticker/:time', (req, res) => {
+  res.sendFile(path.resolve('./static/index.html'));
+});
+
+app.get('/chartCSS', (req, res) => {
+  res.sendFile(path.resolve('./static/styles.css'));
+});
+
+app.get('/chartScript', (req, res) => {
+  res.sendFile(path.resolve('./static/script.js'));
+});
 
 app.get('/api/getAutocompleteData/:ticker', (req, res) => {
   let data = {
