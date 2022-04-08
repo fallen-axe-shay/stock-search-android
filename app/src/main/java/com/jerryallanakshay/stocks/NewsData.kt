@@ -2,18 +2,19 @@ package com.jerryallanakshay.stocks
 
 import java.util.*
 
-class NewsData(title: String, date: Long, source: String, image: String, type: Int) {
+class NewsData(title: String, date: Long, source: String, image: String, url: String, summary: String, type: Int = 1) {
     val title = title
-    val date = getElapsedTime(date)
+    val difference = getTimeDifference(date)
+    val date = getElapsedTime()
     val source = source
     val image = image
-    val type = type
+    var type = type
+    val url = url
+    val summary = summary
 
-    fun getElapsedTime(time: Long): String {
-        val calendar = Calendar.getInstance()
-        val now = (calendar.timeInMillis)/1000
-        var diff = now-time
+    fun getElapsedTime(): String {
         var measurement = "seconds"
+        var diff = difference
         if(diff>=(60 * 60)) {
             diff /= (60 * 60)
             measurement = "hours"
@@ -25,5 +26,12 @@ class NewsData(title: String, date: Long, source: String, image: String, type: I
             measurement = measurement.substring(0, -1)
         }
         return "${diff.toInt()} $measurement ago"
+    }
+
+    fun getTimeDifference(time: Long): Long {
+        val calendar = Calendar.getInstance()
+        val now = (calendar.timeInMillis)/1000
+        var diff = now-time
+        return diff
     }
 }

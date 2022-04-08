@@ -28,6 +28,7 @@ import java.math.RoundingMode
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.min
 
 
 class StockSummary : AppCompatActivity() {
@@ -81,13 +82,13 @@ class StockSummary : AppCompatActivity() {
     private lateinit var recChart: WebView
     private lateinit var surpriseChart: WebView
     private lateinit var newsRecycler: RecyclerView
+    private val newsList = ArrayList<NewsData>()
+    private lateinit var newsAdapter: NewsAdapter
     private var peerList = ArrayList<String>()
     private val peerAdapter = CompanyPeerAdapter(peerList)
     private var timeToSend = 0L
     private var redditMentions = HashMap<String, Int>()
     private var twitterMentions = HashMap<String, Int>()
-    private lateinit var recTrendData: JSONArray
-    private lateinit var earningData: JSONArray
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -134,6 +135,11 @@ class StockSummary : AppCompatActivity() {
         recChart = findViewById(R.id.recommendation_trends)
         surpriseChart = findViewById(R.id.history_eps_surprises)
         newsRecycler = findViewById(R.id.news_list)
+
+        newsAdapter = NewsAdapter(newsList, applicationContext)
+        val linearLayoutManager = LinearLayoutManager(applicationContext)
+        newsRecycler.layoutManager = linearLayoutManager
+        newsRecycler.adapter = newsAdapter
 
         peerRecyclerLayoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.HORIZONTAL, false)
         peerRecycler.layoutManager = peerRecyclerLayoutManager
@@ -313,6 +319,22 @@ class StockSummary : AppCompatActivity() {
         tableTwiNeg.text = twitterMentions["negative"].toString()
         setRecChartOptions()
         setSurpriseChartOptions()
+        showNewsData()
+    }
+
+    fun showNewsData() {
+        newsList.clear()
+        var leeWay = 0
+        for(i in 0 until min(newsData.length(), 20 + leeWay)) {
+            val item = newsData.getJSONObject(i)
+            if(item.getString("image") == "" || item.getString("datetime") == "" || item.getString("source") == "" || item.getString("summary") == "" || item.getString("url") == "" || item.getString("headline") == "") {
+                leeWay++
+                continue
+            }
+            newsList.add(NewsData(item.getString("headline"), item.getLong("datetime"), item.getString("source"), item.getString("image"), item.getString("url"), item.getString("summary")))
+        }
+        newsList[0].type = 0
+        newsAdapter.notifyDataSetChangedWithSort()
     }
 
     fun setRecChartOptions() {

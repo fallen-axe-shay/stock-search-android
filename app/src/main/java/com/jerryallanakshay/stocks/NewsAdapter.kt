@@ -31,13 +31,14 @@ class NewsAdapter(private val dataSet: ArrayList<NewsData>?, private val context
         val smallImage: ImageView = view.findViewById(R.id.image_side_view)
         val largeImageCard: CardView = view.findViewById(R.id.image_main_view_card)
         val smallImageCard: CardView = view.findViewById(R.id.image_side_view_card)
+        val newsCard: CardView = view.findViewById(R.id.news_card)
     }
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.watchlist_item, viewGroup, false)
+            .inflate(R.layout.news_item, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -68,10 +69,19 @@ class NewsAdapter(private val dataSet: ArrayList<NewsData>?, private val context
         viewHolder.title.text = dataSet?.get(position)?.title
         viewHolder.source.text = dataSet?.get(position)?.source
         viewHolder.time.text = dataSet?.get(position)?.date
+
+        viewHolder.newsCard.setOnClickListener {
+            
+        }
     }
 
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = (dataSet?.size)?:0
+
+    fun notifyDataSetChangedWithSort() {
+        dataSet?.sortBy { item -> item.difference }
+        notifyDataSetChanged()
+    }
 
 }
