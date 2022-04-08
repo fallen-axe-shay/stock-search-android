@@ -96,6 +96,8 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                         val intent = Intent(viewHolder.chevronSymbol.context, StockSummary::class.java).apply {
                             putExtra(viewHolder.chevronSymbol.resources.getString(R.string.intent_stock_summary), dataSet?.get(position)?.ticker)
                         }
+                        MainActivity.timer.cancel()
+                        MainActivity.timer.purge()
                         viewHolder.chevronSymbol.context.startActivity(intent)
                     }
                 }

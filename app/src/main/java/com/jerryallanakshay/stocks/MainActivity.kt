@@ -1,5 +1,6 @@
 package com.jerryallanakshay.stocks
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -34,6 +36,10 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        var timer = Timer()
+    }
+
     private var queue: RequestQueue? = null
     private var autocompleteData: MutableList<String> = mutableListOf<String>()
     private var autoCompleteAdapter: ArrayAdapter<String>? = null
@@ -44,6 +50,8 @@ class MainActivity : AppCompatActivity() {
     private var completedRequests: Int = 0
     private var shouldExecuteOnResume: Boolean = true
     private var netWorth = 0.0
+    private var updateRequestCounter: Int = 0
+    private var updateRequestCompleted: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         shouldExecuteOnResume = false
@@ -102,6 +110,101 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun setUpdateInterval() {
+        timer = Timer()
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                updateCashBalance()
+                updatePortfolioData()
+                updateWatchlistData()
+            }
+        }, 0, 15000)
+    }
+
+    fun updateCashBalance() {
+        val index = watchlistArrayList?.indexOfFirst { it.type == 2 }
+        watchlistArrayList!!.get(index!!).netWorth = watchlistArrayList!!.get(index!!).cashBalance
+    }
+
+    fun makePortfolioUpdateRequest(sharedPref: SharedPreferences, portfolioQueue: RequestQueue, ticker: String) {
+        val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$ticker"
+        val jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                val prefData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+                val shareObject = JSONTokener(prefData).nextValue() as JSONObject
+                var currentArray = shareObject.getJSONArray(response.getString("ticker"))
+                var totalCost = 0.0
+                for(i in 0 until currentArray.length()) {
+                    totalCost += currentArray.getJSONObject(i).getDouble("price")
+                }
+                var average = 0.0
+                if(currentArray.length()!=0) {
+                    average = roundToTwoDecimalPlaces(totalCost/currentArray.length()).toString().toDouble()
+                }
+                var changeData = response.getDouble("c") - average
+                var changePercent = (changeData/average) * 100
+                val index = watchlistArrayList?.indexOfFirst { it.ticker == response.getString("ticker") }
+                watchlistArrayList?.get(index!!)?.stockPrice = roundToTwoDecimalPlaces(currentArray.length() * response.getDouble("c")).toString()
+                watchlistArrayList?.get(index!!)?.stockChange = roundToTwoDecimalPlaces(changeData).toString()
+                watchlistArrayList?.get(index!!)?.stockChangePercent = roundToTwoDecimalPlaces(changePercent).toString()
+                val indexWallet = watchlistArrayList?.indexOfFirst { it.type == 2 }
+                var netWorth = watchlistArrayList!!.get(indexWallet!!).netWorth.toDouble()
+                netWorth += (currentArray.length()*response.getDouble("c"))
+                watchlistArrayList!!.get(indexWallet!!).netWorth = roundToTwoDecimalPlaces(netWorth).toString()
+                updateRequestCompleted++
+                checkIfAllDataUpdated()
+            },
+            { /* Do nothing */ })
+        portfolioQueue?.add(jsonObjectRequest)
+    }
+
+    fun checkIfAllDataUpdated() {
+        if(updateRequestCounter==updateRequestCompleted) {
+            watchlistAdapter?.notifyDataSetChanged()
+        }
+    }
+
+    fun updatePortfolioData() {
+        val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+        val portfolioQueue = Volley.newRequestQueue(applicationContext)
+        val shareObject = JSONTokener(sharedPref.getString(getString(R.string.shares_owned), "{}")).nextValue() as JSONObject
+        val keys: Iterator<*> = shareObject.keys()
+        while (keys.hasNext()) {
+            updateRequestCounter++
+            val currentKey = keys.next() as String
+            makePortfolioUpdateRequest(sharedPref, portfolioQueue, currentKey)
+        }
+    }
+
+    fun updateWatchlistData() {
+        val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+        val watchlistQueue = Volley.newRequestQueue(applicationContext)
+        val prefData = sharedPref.getString(getString(R.string.watchlist), "[]")
+        val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
+        for(i in 0 until jsonArray.length()) {
+            updateRequestCounter++
+            makeStockUpdateRequest(jsonArray.getString(i), watchlistQueue)
+        }
+    }
+
+    fun makeStockUpdateRequest(ticker: String, watchlistQueue: RequestQueue) {
+        val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$ticker"
+        val jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                val index = watchlistArrayList?.indexOfLast { it.ticker == response.getString("ticker") }
+                watchlistArrayList?.get(index!!)?.stockPrice = roundToTwoDecimalPlaces(response.getDouble("c")).toString()
+                watchlistArrayList?.get(index!!)?.stockChange = roundToTwoDecimalPlaces(response.getDouble("d")).toString()
+                watchlistArrayList?.get(index!!)?.stockChangePercent = roundToTwoDecimalPlaces(response.getDouble("dp")).toString()
+                updateRequestCompleted++
+                checkIfAllDataUpdated()
+            },
+            { /* Do nothing */ })
+        watchlistQueue?.add(jsonObjectRequest)
+    }
+
+
     private fun setWatchlistRecyclerView(watchlistList: RecyclerView, sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
         val linearLayoutManager = LinearLayoutManager(applicationContext)
         watchlistList.layoutManager = linearLayoutManager
@@ -144,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 var changeData = response.getDouble("c") - average
                 var changePercent = (changeData/average) * 100
-                watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", totalCost, changeData, changePercent, 3, ""))
+                watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", (currentArray.length() * response.getDouble("c")), changeData, changePercent, 3, ""))
                 watchlistAdapter?.notifyDataSetChangedWithSort()
                 completedRequests++
                 getSetCashBalance(sharedPref, true, currentArray.length()*response.getDouble("c"))
@@ -187,6 +290,7 @@ class MainActivity : AppCompatActivity() {
         if(requestCounter==completedRequests) {
             pageLoader.visibility = View.GONE
             pageContent.visibility = View.VISIBLE
+            setUpdateInterval()
         }
     }
 
@@ -260,6 +364,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, StockSummary::class.java).apply {
                 putExtra(resources.getString(R.string.intent_stock_summary), ticker)
             }
+            timer.cancel()
+            timer.purge()
             startActivity(intent)
         }
         searchTicker.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
@@ -348,6 +454,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             shouldExecuteOnResume = true
         }
+    }
+
+    override fun onBackPressed() {
+        timer.cancel()
+        timer.purge()
+        finish()
     }
 
 

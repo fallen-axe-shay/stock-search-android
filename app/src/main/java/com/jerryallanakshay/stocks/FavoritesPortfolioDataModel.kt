@@ -7,12 +7,12 @@ class FavoritesPortfolioDataModel(ticker: String = "", stockName: String = "", s
 
     val ticker: String = ticker
     val stockName: String = stockName
-    val stockPrice: String = roundToTwoDecimalPlaces(stockPrice).toString()
-    val stockChange: String = roundToTwoDecimalPlaces(stockChange).toString()
-    val stockChangePercent: String = roundToTwoDecimalPlaces(stockChangePercent).toString()
+    var stockPrice: String = roundToTwoDecimalPlaces(stockPrice).toString()
+    var stockChange: String = roundToTwoDecimalPlaces(stockChange).toString()
+    var stockChangePercent: String = roundToTwoDecimalPlaces(stockChangePercent).toString()
     val type: Int = type
     val banner: String = banner
-    val netWorth: String = roundToTwoDecimalPlaces(netWorth).toString()
+    var netWorth: String = roundToTwoDecimalPlaces(netWorth).toString()
     val cashBalance: String = roundToTwoDecimalPlaces(cashBalance).toString()
 
     private fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
