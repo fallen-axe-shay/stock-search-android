@@ -1,8 +1,10 @@
 package com.jerryallanakshay.stocks
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 class NewsData(title: String, date: Long, source: String, image: String, url: String, summary: String, type: Int = 1) {
+    val formattedDate = getFormattedDate(date)
     val title = title
     val difference = getTimeDifference(date)
     val date = getElapsedTime()
@@ -11,6 +13,12 @@ class NewsData(title: String, date: Long, source: String, image: String, url: St
     var type = type
     val url = url
     val summary = summary
+
+    fun getFormattedDate(date: Long): String {
+        val sdf = SimpleDateFormat("MMMM dd, yyyy")
+        val netDate = Date(date * 1000)
+        return sdf.format(netDate)
+    }
 
     fun getElapsedTime(): String {
         var measurement = "seconds"

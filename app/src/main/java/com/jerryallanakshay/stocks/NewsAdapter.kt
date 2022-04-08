@@ -1,21 +1,22 @@
 package com.jerryallanakshay.stocks
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.util.Log
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import org.json.JSONArray
-import org.json.JSONTokener
+
 
 class NewsAdapter(private val dataSet: ArrayList<NewsData>?, private val context: Context) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
@@ -71,8 +72,35 @@ class NewsAdapter(private val dataSet: ArrayList<NewsData>?, private val context
         viewHolder.time.text = dataSet?.get(position)?.date
 
         viewHolder.newsCard.setOnClickListener {
-            
+            val dialog = Dialog(viewHolder.newsCard.context)
+            dialog.setContentView(R.layout.news_dialog)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            // set the custom dialog components - text, image and button
+
+            // set the custom dialog components - text, image and button
+            val title = dialog.findViewById<TextView>(R.id.title)
+            title.text = dataSet!![position].title
+            val date = dialog.findViewById<TextView>(R.id.date)
+            date.text = dataSet!![position].formattedDate
+            val summary = dialog.findViewById<TextView>(R.id.summary)
+            summary.text = dataSet!![position].summary
+            val source = dialog.findViewById<TextView>(R.id.source)
+            source.text = dataSet!![position].source
+            val chrome_btn = dialog.findViewById<ImageView>(R.id.chrome_button)
+            val twitter_btn = dialog.findViewById<ImageView>(R.id.twitter_button)
+            val facebook_btn = dialog.findViewById<ImageView>(R.id.facebook_button)
+            chrome_btn.setOnClickListener { openLinkOnBrowser(viewHolder.newsCard.context, dataSet!![position].url) }
+            twitter_btn.setOnClickListener { openLinkOnBrowser(viewHolder.newsCard.context, "https://twitter.com/intent/tweet?text=Check out this Link:&url=${dataSet!![position].url}") }
+            facebook_btn.setOnClickListener { openLinkOnBrowser(viewHolder.newsCard.context, "https://www.facebook.com/sharer/sharer.php?u=${dataSet!![position].url}") }
+            dialog.show()
         }
+    }
+
+    fun openLinkOnBrowser(context: Context, url: String) {
+        val openURL = Intent(Intent.ACTION_VIEW)
+        openURL.data = Uri.parse(url)
+        context.startActivity(openURL)
     }
 
 
