@@ -97,6 +97,7 @@ class StockSummary : AppCompatActivity() {
     private var timeToSend = 0L
     private var redditMentions = HashMap<String, Int>()
     private var twitterMentions = HashMap<String, Int>()
+    private lateinit var sharedPref: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,7 +156,7 @@ class StockSummary : AppCompatActivity() {
         peerRecycler.layoutManager = peerRecyclerLayoutManager
         peerRecycler.adapter = peerAdapter
 
-        val sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
+        sharedPref = this.getSharedPreferences(getString(R.string.stock_app_shared_pref), Context.MODE_PRIVATE)
         queue = Volley.newRequestQueue(this)
 
         adapter = ViewPagerAdapter(supportFragmentManager)
@@ -284,6 +285,38 @@ class StockSummary : AppCompatActivity() {
 
     }
 
+    fun showPortfolioData() {
+        val shareData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+        val shareObject = JSONTokener(shareData).nextValue() as JSONObject
+        var currentArray = JSONArray()
+        if(shareObject.has(stockSymbol)) {
+            currentArray = shareObject.getJSONArray(stockSymbol)
+        }
+        sharesOwned.text = currentArray.length().toString()
+        var totalShareCost = 0.0
+        for(i in 0 until currentArray.length()) {
+            totalShareCost += currentArray.getJSONObject(i).getDouble("price")
+        }
+        var average = 0.0
+        if(currentArray.length()!=0) {
+            average = roundToTwoDecimalPlaces(totalShareCost/currentArray.length()).toString().toDouble()
+        }
+        avgCost.text = "$${roundToTwoDecimalPlaces(average).toString()}"
+        marketValue.text = "$${roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c")).toString()}"
+        totalCost.text = "$${roundToTwoDecimalPlaces(totalShareCost).toString()}"
+        var changeData = profileAndPriceData.getDouble("c") - average
+        if(currentArray.length()!=0) {
+            if(changeData>0) {
+                changeCost.setTextColor(resources.getColor(R.color.green_tint))
+            } else if(changeData<0) {
+                changeCost.setTextColor(resources.getColor(R.color.red_tint))
+            }
+            changeCost.text = "$${roundToTwoDecimalPlaces(changeData).toString()}"
+        } else {
+            changeCost.text = "$0.00"
+        }
+    }
+
     fun sellShares(number: Int, cost: Double, symbol: String, sharedPref: SharedPreferences) {
         val wallet = sharedPref.getFloat(getString(R.string.cash_balance), 25000F).toDouble()
         val balance = wallet + (number * cost)
@@ -344,6 +377,7 @@ class StockSummary : AppCompatActivity() {
         }
 
         dialog.show()
+        showPortfolioData()
     }
 
     fun fetchRecentHistoryData(closeTime: Long, pageLoader: ProgressBar, pageContent: LinearLayout) {
@@ -452,6 +486,7 @@ class StockSummary : AppCompatActivity() {
 
     fun checkAndTogglePageVisibility(pageLoader: ProgressBar, pageContent: LinearLayout) {
         if(requests==completedRequests) {
+            showPortfolioData()
             setupViewPager()
             displayData()
             pageLoader.visibility = View.GONE
