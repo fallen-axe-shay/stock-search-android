@@ -281,7 +281,7 @@ class StockSummary : AppCompatActivity() {
         price.text = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c")).toString()
         change.text = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("d")).toString()
         changePercent.text = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("dp")).toString()
-        companyName.text = profileAndPriceData.getString("name")
+        tableCompany.text = profileAndPriceData.getString("name")
         companySymbol.text = profileAndPriceData.getString("ticker")
         if(profileAndPriceData.getDouble("d") > 0) {
             trendingSymbol.visibility = View.VISIBLE
