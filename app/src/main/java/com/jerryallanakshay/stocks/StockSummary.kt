@@ -1,9 +1,15 @@
 package com.jerryallanakshay.stocks
 
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.webkit.ConsoleMessage
 import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +29,7 @@ import com.highsoft.highcharts.core.HIChartView
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
+import java.lang.Exception
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -79,6 +86,7 @@ class StockSummary : AppCompatActivity() {
     private lateinit var tableTwiTot: TextView
     private lateinit var tableTwiNeg: TextView
     private lateinit var tableTwiPos: TextView
+    private lateinit var tradeButton: Button
     private lateinit var recChart: WebView
     private lateinit var surpriseChart: WebView
     private lateinit var newsRecycler: RecyclerView
@@ -89,6 +97,7 @@ class StockSummary : AppCompatActivity() {
     private var timeToSend = 0L
     private var redditMentions = HashMap<String, Int>()
     private var twitterMentions = HashMap<String, Int>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Stocks)
@@ -135,6 +144,7 @@ class StockSummary : AppCompatActivity() {
         recChart = findViewById(R.id.recommendation_trends)
         surpriseChart = findViewById(R.id.history_eps_surprises)
         newsRecycler = findViewById(R.id.news_list)
+        tradeButton = findViewById(R.id.trade_button)
 
         newsAdapter = NewsAdapter(newsList, applicationContext)
         val linearLayoutManager = LinearLayoutManager(applicationContext)
@@ -163,8 +173,139 @@ class StockSummary : AppCompatActivity() {
             toggleStar(starBtn, sharedPref)
         }
 
+        tradeButton.setOnClickListener{
+            val dialog = Dialog(tradeButton.context)
+            dialog.setContentView(R.layout.trade_dialog)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            val title = dialog.findViewById<TextView>(R.id.title)
+            val shares = dialog.findViewById<EditText>(R.id.number_of_shares)
+            val calculation = dialog.findViewById<TextView>(R.id.current_details)
+            val wallet = dialog.findViewById<TextView>(R.id.wallet_amount)
+            val buyButton = dialog.findViewById<Button>(R.id.buy_button)
+            val sellButton = dialog.findViewById<Button>(R.id.sell_button)
+            title.text = "Trade ${profileAndPriceData.getString("name")} Shares"
+            calculation.text = "0 * $${roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c")).toString()}/Share = $0"
+            wallet.text = "$${roundToTwoDecimalPlaces(sharedPref.getFloat(getString(R.string.cash_balance), 25000.00F).toDouble()).toString()} to buy ${profileAndPriceData.getString("ticker")}"
+
+            shares.addTextChangedListener(object : TextWatcher {
+
+                override fun afterTextChanged(s: Editable) { }
+
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) { }
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    var shareNo: Int?
+                    try {
+                        shareNo = s.toString().toInt()
+                    } catch (ex: Exception) {
+                        shareNo = 0
+                    }
+                    calculation.text = "${shareNo} * $${roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c")).toString()}/Share = $${roundToTwoDecimalPlaces(shareNo!! * roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c"))!!.toDouble()).toString()}"
+                }
+
+            })
+
+            buyButton.setOnClickListener{
+                val noText = shares.text.toString().trim()
+                var no = 0
+                if(!noText.equals("")) {
+                    no = noText.toInt()
+                }
+                if(no == 0) {
+                    dialog.dismiss()
+                } else {
+                    val totalCost = no * profileAndPriceData.getDouble("c")
+                    val currentWallet =
+                        sharedPref.getFloat(getString(R.string.cash_balance), 25000.00F)
+                    if (totalCost > currentWallet) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Not enough money to buy",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        buyShares(
+                            totalCost,
+                            currentWallet.toDouble(),
+                            profileAndPriceData.getString("ticker"),
+                            no,
+                            profileAndPriceData.getDouble("c")
+                        )
+                        dialog.dismiss()
+                    }
+                }
+            }
+
+            sellButton.setOnClickListener{
+                val noText = shares.text.toString().trim()
+                var no = 0
+                if(!noText.equals("")) {
+                    no = noText.toInt()
+                }
+                if(no == 0) {
+                    dialog.dismiss()
+                } else {
+
+                    val shareData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+                    val jsonObject = JSONTokener(shareData).nextValue() as JSONObject
+                    if (!jsonObject.has(profileAndPriceData.getString("ticker"))) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Not enough shares to sell",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val tickerShares =
+                            jsonObject.getJSONArray(profileAndPriceData.getString("ticker"))
+                        if (no > tickerShares.length()) {
+                            Toast.makeText(
+                                applicationContext,
+                                "Not enough shares to sell",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            sellShares(
+                                no,
+                                profileAndPriceData.getDouble("c"),
+                                profileAndPriceData.getString("ticker")
+                            )
+                            dialog.dismiss()
+                        }
+                    }
+                }
+            }
+
+            dialog.show()
+        }
+
         fetchSummaryData(pageLoader, pageContent)
 
+    }
+
+    fun sellShares(number: Int, cost: Double, symbol: String) {
+        showTradeSuccessDialog("You have successfully sold $number shares of $symbol")
+    }
+
+    fun buyShares(totalCost: Double, currentWallet: Double, symbol: String, number: Int, price: Double) {
+        showTradeSuccessDialog("You have successfully bought $number shares of $symbol")
+    }
+
+    fun showTradeSuccessDialog(message: String) {
+        val dialog = Dialog(tradeButton.context)
+        dialog.setContentView(R.layout.trade_complete_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val title = dialog.findViewById<TextView>(R.id.success_text)
+        val btn = dialog.findViewById<Button>(R.id.done_button)
+
+        title.text = message
+
+        btn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     fun fetchRecentHistoryData(closeTime: Long, pageLoader: ProgressBar, pageContent: LinearLayout) {

@@ -425,7 +425,8 @@
                             android:text="Trade"
                             android:textColor="@color/white"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginRight="20dp"/>
+                            android:layout_marginRight="20dp"
+                            android:id="@+id/trade_button"/>
 
                     </LinearLayout>
 
