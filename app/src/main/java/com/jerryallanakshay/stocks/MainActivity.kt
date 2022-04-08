@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         closeSearchBtn.setOnClickListener {
-            //showNormalAppBar(searchToolbarLyt, toolbarLyt, searchTicker)
             searchTicker.setText("")
             searchTicker.dismissDropDown()
         }
@@ -96,6 +95,9 @@ class MainActivity : AppCompatActivity() {
         finnhubLinkText.setOnClickListener {
             openLinkOnBrowser("https://finnhub.io/")
         }
+
+        checkAndTogglePageVisibility(pageLoader, pageContent)
+
     }
 
     private fun setWatchlistRecyclerView(watchlistList: RecyclerView, sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
@@ -247,6 +249,7 @@ class MainActivity : AppCompatActivity() {
         }
         val netWorth = 213.312
         watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 2, netWorth = netWorth, cashBalance = currentCashBalance.toDouble()))
+        watchlistAdapter!!.notifyDataSetChangedWithSort()
     }
 
     fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {

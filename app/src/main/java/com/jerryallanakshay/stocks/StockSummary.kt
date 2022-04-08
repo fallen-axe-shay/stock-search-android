@@ -226,11 +226,11 @@ class StockSummary : AppCompatActivity() {
                         ).show()
                     } else {
                         buyShares(
-                            totalCost,
                             currentWallet.toDouble(),
                             profileAndPriceData.getString("ticker"),
                             no,
-                            profileAndPriceData.getDouble("c")
+                            profileAndPriceData.getDouble("c"),
+                            sharedPref
                         )
                         dialog.dismiss()
                     }
@@ -268,7 +268,8 @@ class StockSummary : AppCompatActivity() {
                             sellShares(
                                 no,
                                 profileAndPriceData.getDouble("c"),
-                                profileAndPriceData.getString("ticker")
+                                profileAndPriceData.getString("ticker"),
+                                sharedPref
                             )
                             dialog.dismiss()
                         }
@@ -283,11 +284,48 @@ class StockSummary : AppCompatActivity() {
 
     }
 
-    fun sellShares(number: Int, cost: Double, symbol: String) {
+    fun sellShares(number: Int, cost: Double, symbol: String, sharedPref: SharedPreferences) {
+        val wallet = sharedPref.getFloat(getString(R.string.cash_balance), 25000F).toDouble()
+        val balance = wallet + (number * cost)
+
+        val shareData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+        val shareObject = JSONTokener(shareData).nextValue() as JSONObject
+        var currentArray = shareObject.getJSONArray(symbol)
+        for(i in 0 until number) {
+            currentArray.remove(0)
+        }
+        if(currentArray.length()==0) {
+            shareObject.remove(symbol)
+        } else {
+            shareObject.put(symbol, currentArray)
+        }
+        with (sharedPref.edit()) {
+            putFloat(getString(R.string.cash_balance), balance.toFloat())
+            putString(getString(R.string.shares_owned), shareObject.toString())
+            apply()
+        }
         showTradeSuccessDialog("You have successfully sold $number shares of $symbol")
     }
 
-    fun buyShares(totalCost: Double, currentWallet: Double, symbol: String, number: Int, price: Double) {
+    fun buyShares(currentWallet: Double, symbol: String, number: Int, price: Double, sharedPref: SharedPreferences) {
+        val balance = currentWallet - (price * number)
+        val shareData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+        val shareObject = JSONTokener(shareData).nextValue() as JSONObject
+        var currentArray = JSONArray()
+        if(shareObject.has(symbol)) {
+            currentArray = shareObject.getJSONArray(symbol)
+        }
+        for( i in 0 until number) {
+            val jsonObject = JSONObject()
+            jsonObject.put("price", price)
+            currentArray.put(jsonObject)
+        }
+        shareObject.put(symbol, currentArray)
+        with (sharedPref.edit()) {
+            putFloat(getString(R.string.cash_balance), balance.toFloat())
+            putString(getString(R.string.shares_owned), shareObject.toString())
+            apply()
+        }
         showTradeSuccessDialog("You have successfully bought $number shares of $symbol")
     }
 
