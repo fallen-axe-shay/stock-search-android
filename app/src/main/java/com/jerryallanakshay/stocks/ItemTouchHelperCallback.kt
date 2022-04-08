@@ -58,6 +58,7 @@ class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.Si
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
+        if(viewHolder.adapterPosition == -1) return makeMovementFlags(0, 0)
         val type = mAdapter.getData()?.get(viewHolder.adapterPosition)?.type
         if(type!=3 && type!=5) return makeMovementFlags(0,0)
         val  dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END
