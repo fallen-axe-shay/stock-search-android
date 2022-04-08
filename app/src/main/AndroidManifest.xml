@@ -10,7 +10,8 @@
         android:icon="@mipmap/new_launcher_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/new_launcher_icon_round"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Stocks.Launcher">
         <activity
             android:name=".StockSummary"
             android:exported="false"
