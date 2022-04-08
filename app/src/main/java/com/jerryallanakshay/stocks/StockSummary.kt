@@ -101,7 +101,6 @@ class StockSummary : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Stocks)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_stock_summary)
 

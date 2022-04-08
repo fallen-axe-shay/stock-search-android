@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         shouldExecuteOnResume = false
-        setTheme(R.style.Theme_Stocks)
+        setTheme(R.style.Theme_Stocks_NoActionBar)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
