@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private var requestCounter: Int = 0
     private var completedRequests: Int = 0
     private var shouldExecuteOnResume: Boolean = true
+    private var netWorth = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         shouldExecuteOnResume = false
@@ -146,6 +147,7 @@ class MainActivity : AppCompatActivity() {
                 watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", totalCost, changeData, changePercent, 3, ""))
                 watchlistAdapter?.notifyDataSetChangedWithSort()
                 completedRequests++
+                getSetCashBalance(sharedPref, true, currentArray.length()*response.getDouble("c"))
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { /* Do nothing */ })
@@ -281,14 +283,18 @@ class MainActivity : AppCompatActivity() {
         todayText.text = currentDate.toString()
     }
 
-    fun getSetCashBalance(sharedPref: SharedPreferences) {
+    fun getSetCashBalance(sharedPref: SharedPreferences, fromPortfolio: Boolean = false, amount: Double = 0.0) {
         watchlistArrayList?.removeIf { data -> data.type == 2 }
         val currentCashBalance = sharedPref.getFloat(getString(R.string.cash_balance), 25000.00F)
         with (sharedPref.edit()) {
             putFloat(getString(R.string.cash_balance), currentCashBalance)
             apply()
         }
-        val netWorth = 213.312
+        if(fromPortfolio) {
+            netWorth += amount
+        } else {
+            netWorth = currentCashBalance.toDouble()
+        }
         watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 2, netWorth = netWorth, cashBalance = currentCashBalance.toDouble()))
         watchlistAdapter!!.notifyDataSetChangedWithSort()
     }
