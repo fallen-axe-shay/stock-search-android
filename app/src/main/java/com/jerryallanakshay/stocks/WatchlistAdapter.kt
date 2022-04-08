@@ -67,14 +67,11 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                     viewHolder.netWorth.text = dataSet?.get(position)?.netWorth
                     viewHolder.cashBalance.text = dataSet?.get(position)?.cashBalance
                 }
-                3 -> {
-                    //viewHolder.portfolioSummary.visibility = View.VISIBLE
-                }
                 4 -> {
                     viewHolder.banner.visibility = View.VISIBLE
                     viewHolder.banner.text = dataSet?.get(position)?.banner
                 }
-                5 -> {
+                3, 5 -> {
                     viewHolder.tickerData.visibility = View.VISIBLE
                     viewHolder.ticker.text = dataSet?.get(position)?.ticker
                     viewHolder.name.text = dataSet?.get(position)?.stockName

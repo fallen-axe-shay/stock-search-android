@@ -62,6 +62,7 @@ class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.Si
         if(type!=3 && type!=5) return makeMovementFlags(0,0)
         val  dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END
         val swipeFlags = ItemTouchHelper.LEFT
+        if(type==3) return makeMovementFlags(dragFlags, 0)
         return makeMovementFlags(dragFlags, swipeFlags)
     }
 

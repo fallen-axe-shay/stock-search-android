@@ -24,6 +24,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
+import org.json.JSONObject
 import org.json.JSONTokener
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -109,6 +110,46 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback(watchlistAdapter!!))
         itemTouchHelper!!.attachToRecyclerView(watchlistList)
         fetchFavoritesData(sharedPref, pageLoader, pageContent)
+        fetchPortfolioData(sharedPref, pageLoader, pageContent)
+    }
+
+    fun fetchPortfolioData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
+        watchlistArrayList?.removeIf { data -> data.type == 3 }
+        val prefData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+        val shareObject = JSONTokener(prefData).nextValue() as JSONObject
+        val keys: Iterator<*> = shareObject.keys()
+        while (keys.hasNext()) {
+            val currentKey = keys.next() as String
+            requestCounter++
+            makePortfolioRequest(currentKey, pageLoader, pageContent, sharedPref)
+        }
+    }
+
+    fun makePortfolioRequest(ticker: String, pageLoader: ProgressBar, pageContent: RelativeLayout, sharedPref: SharedPreferences) {
+        val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$ticker"
+        val jsonObjectRequest = JsonObjectRequest (
+            Request.Method.GET, url, null,
+            { response ->
+                val prefData = sharedPref.getString(getString(R.string.shares_owned), "{}")
+                val shareObject = JSONTokener(prefData).nextValue() as JSONObject
+                var currentArray = shareObject.getJSONArray(response.getString("ticker"))
+                var totalCost = 0.0
+                for(i in 0 until currentArray.length()) {
+                    totalCost += currentArray.getJSONObject(i).getDouble("price")
+                }
+                var average = 0.0
+                if(currentArray.length()!=0) {
+                    average = roundToTwoDecimalPlaces(totalCost/currentArray.length()).toString().toDouble()
+                }
+                var changeData = response.getDouble("c") - average
+                var changePercent = (changeData/average) * 100
+                watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", totalCost, changeData, changePercent, 3, ""))
+                watchlistAdapter?.notifyDataSetChangedWithSort()
+                completedRequests++
+                checkAndTogglePageVisibility(pageLoader, pageContent)
+            },
+            { /* Do nothing */ })
+        queue?.add(jsonObjectRequest)
     }
 
     fun fetchFavoritesData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
@@ -117,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
         for(i in 0 until jsonArray.length()) {
             requestCounter++
-            makePortfolioAndStockRequest(jsonArray.getString(i), pageLoader, pageContent)
+            makeStockRequest(jsonArray.getString(i), pageLoader, pageContent)
         }
     }
 
@@ -126,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 4, banner = "favorites"))
     }
 
-    fun makePortfolioAndStockRequest(ticker: String, pageLoader: ProgressBar, pageContent: RelativeLayout) {
+    fun makeStockRequest(ticker: String, pageLoader: ProgressBar, pageContent: RelativeLayout) {
         val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.profile_and_quote_api)}$ticker"
         val jsonObjectRequest = JsonObjectRequest (
             Request.Method.GET, url, null,
@@ -296,6 +337,7 @@ class MainActivity : AppCompatActivity() {
             val pageLoader = findViewById<ProgressBar>(R.id.page_loader)
             val pageContent = findViewById<RelativeLayout>(R.id.page_content)
             fetchFavoritesData(sharedPref, pageLoader, pageContent)
+            fetchPortfolioData(sharedPref, pageLoader, pageContent)
             getSetCashBalance(sharedPref)
         } else {
             shouldExecuteOnResume = true
