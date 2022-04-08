@@ -17,12 +17,28 @@ app.get('/chart/history/:ticker/:time', (req, res) => {
   res.sendFile(path.resolve('./static/index.html'));
 });
 
+app.get('/chart/recTrends/:ticker', (req, res) => {
+  res.sendFile(path.resolve('./static/recIndex.html'));
+});
+
+app.get('/chart/earn/:ticker', (req, res) => {
+  res.sendFile(path.resolve('./static/earningIndex.html'));
+});
+
 app.get('/chartCSS', (req, res) => {
   res.sendFile(path.resolve('./static/styles.css'));
 });
 
 app.get('/chartScript', (req, res) => {
   res.sendFile(path.resolve('./static/script.js'));
+});
+
+app.get('/chartRecScript', (req, res) => {
+  res.sendFile(path.resolve('./static/recScript.js'));
+});
+
+app.get('/chartEarnScript', (req, res) => {
+  res.sendFile(path.resolve('./static/earningScript.js'));
 });
 
 app.get('/api/getAutocompleteData/:ticker', (req, res) => {

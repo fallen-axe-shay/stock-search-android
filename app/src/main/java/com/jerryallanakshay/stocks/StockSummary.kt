@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,8 +78,8 @@ class StockSummary : AppCompatActivity() {
     private lateinit var tableTwiTot: TextView
     private lateinit var tableTwiNeg: TextView
     private lateinit var tableTwiPos: TextView
-    private lateinit var recChart: HIChartView
-    private lateinit var surpriseChart: HIChartView
+    private lateinit var recChart: WebView
+    private lateinit var surpriseChart: WebView
     private lateinit var newsRecycler: RecyclerView
     private var peerList = ArrayList<String>()
     private val peerAdapter = CompanyPeerAdapter(peerList)
@@ -231,30 +232,6 @@ class StockSummary : AppCompatActivity() {
             { /* Do nothing */ })
         queue?.add(jsonObjectRequest)
 
-        url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.rec_trends_api)}$stockSymbol"
-        requests++
-        jsonArrayRequest = JsonArrayRequest (
-            Request.Method.GET, url, null,
-            { response ->
-                recTrendData = response
-                completedRequests++
-                checkAndTogglePageVisibility(pageLoader, pageContent)
-            },
-            { /* Do nothing */ })
-        queue?.add(jsonArrayRequest)
-
-        url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.comp_earnings_api)}$stockSymbol"
-        requests++
-        jsonArrayRequest = JsonArrayRequest (
-            Request.Method.GET, url, null,
-            { response ->
-                earningData = response
-                completedRequests++
-                checkAndTogglePageVisibility(pageLoader, pageContent)
-            },
-            { /* Do nothing */ })
-        queue?.add(jsonArrayRequest)
-
     }
 
     private fun aggregateSocialSentiments(data: JSONObject) {
@@ -339,89 +316,15 @@ class StockSummary : AppCompatActivity() {
     }
 
     fun setRecChartOptions() {
-        val categories = ArrayList<String>()
-        val strongBuy = ArrayList<Int>()
-        val buy = ArrayList<Int>()
-        val hold = ArrayList<Int>()
-        val sell = ArrayList<Int>()
-        val strongSell = ArrayList<Int>()
-        for( i in 0 until recTrendData.length()) {
-            categories.add(recTrendData.getJSONObject(i).getString("period"))
-            strongBuy.add(recTrendData.getJSONObject(i).getInt("strongBuy"))
-            buy.add(recTrendData.getJSONObject(i).getInt("buy"))
-            hold.add(recTrendData.getJSONObject(i).getInt("hold"))
-            sell.add(recTrendData.getJSONObject(i).getInt("sell"))
-            strongSell.add(recTrendData.getJSONObject(i).getInt("strongSell"))
-        }
-        val recOptions = HIOptions()
-        val title = HITitle()
-        title.text = "Recommendation Trends"
-        recOptions.title = title
-        val chart = HIChart()
-        chart.type = "column"
-        recOptions.chart = chart
-        val xAxis = HIXAxis()
-        xAxis.categories = categories
-        recOptions.xAxis = ArrayList(Collections.singletonList(xAxis))
-        val yAxis = HIYAxis()
-        yAxis.min = 0
-        val title1 = HITitle()
-        title1.text = "#Analysis"
-        yAxis.title = title1
-        val stackLabels = HIStackLabels()
-        stackLabels.enabled = false
-        yAxis.stackLabels = stackLabels
-        recOptions.yAxis = ArrayList(Collections.singletonList(yAxis))
-        val legend = HILegend()
-        legend.align = "center"
-        legend.verticalAlign = "bottom"
-        legend.backgroundColor = HIColor.initWithName("white")
-        recOptions.legend = legend
-        val plotOptions = HIPlotOptions()
-        val column = HIColumn()
-        column.stacking = "normal"
-        val dataLabels = HIDataLabels()
-        dataLabels.enabled = true
-        column.dataLabels = ArrayList(Collections.singletonList(dataLabels))
-        plotOptions.column = column
-        recOptions.plotOptions = plotOptions
-        val series1 = HISeries()
-        series1.type = "column"
-        series1.name = "Strong Buy"
-        series1.color = HIColor.initWithHexValue("176f37")
-        series1.data = strongBuy
-        val series2 = HISeries()
-        series2.type = "column"
-        series2.name = "Buy"
-        series2.color = HIColor.initWithHexValue("1db954")
-        series2.data = buy
-        val series3 = HISeries()
-        series3.type = "column"
-        series3.name = "Hold"
-        series3.color = HIColor.initWithHexValue("b98b1d")
-        series3.data = hold
-        val series4 = HISeries()
-        series4.type = "column"
-        series4.name = "Sell"
-        series4.color = HIColor.initWithHexValue("f45e5e")
-        series4.data = sell
-        val series5 = HISeries()
-        series5.type = "column"
-        series5.name = "Strong Sell"
-        series5.color = HIColor.initWithHexValue("813131")
-        series5.data = strongSell
-        val seriesList = ArrayList<HISeries>()
-        seriesList.add(series1)
-        seriesList.add(series2)
-        seriesList.add(series3)
-        seriesList.add(series4)
-        seriesList.add(series5)
-        recOptions.series = seriesList
-        recChart.options = recOptions
+        recChart.settings.javaScriptEnabled = true
+        val url = "${applicationContext?.getString(R.string.server_url)}${applicationContext?.getString(R.string.rec_trends_api)}${stockSymbol}"
+        recChart.loadUrl(url)
     }
 
     fun setSurpriseChartOptions() {
-
+        surpriseChart.settings.javaScriptEnabled = true
+        val url = "${applicationContext?.getString(R.string.server_url)}${applicationContext?.getString(R.string.comp_earnings_api)}${stockSymbol}"
+        surpriseChart.loadUrl(url)
     }
 
     fun populatePeerList() {

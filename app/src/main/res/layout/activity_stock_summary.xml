@@ -863,20 +863,20 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="840dp"
                         android:orientation="vertical"
                         android:layout_marginTop="10dp">
 
-                        <com.highsoft.highcharts.core.HIChartView
+                        <WebView
                             android:id="@+id/recommendation_trends"
                             android:layout_width="match_parent"
-                            android:layout_height="300dp"
+                            android:layout_height="400dp"
                             android:padding="10dp"/>
 
-                        <com.highsoft.highcharts.core.HIChartView
+                        <WebView
                             android:id="@+id/history_eps_surprises"
                             android:layout_width="match_parent"
-                            android:layout_height="300dp"
+                            android:layout_height="400dp"
                             android:padding="10dp"/>
 
                     </LinearLayout>
