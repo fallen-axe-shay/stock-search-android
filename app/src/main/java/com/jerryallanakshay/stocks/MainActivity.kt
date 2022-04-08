@@ -456,9 +456,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
+    override fun onDestroy() {
         timer.cancel()
         timer.purge()
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
         finish()
     }
 
