@@ -42,6 +42,7 @@ class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.Si
             to = itemBounds[0]!!
         }
         mAdapter.notifyItemMoved(from, to)
+        mAdapter.swapData(from, to)
         return true
     }
 

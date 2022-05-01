@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import org.json.JSONArray
 import org.json.JSONTokener
+import java.util.*
+import kotlin.collections.ArrayList
 
 class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataModel>?, private val context: Context, private val sharedPref: SharedPreferences) : RecyclerView.Adapter<WatchlistAdapter.ViewHolder>() {
 
@@ -132,7 +134,7 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
                 apply()
             }
             dataSet?.removeAt(position)
-            this.notifyDataSetChangedWithSort()
+            this.notifyItemRemoved(position)
         }
 
         fun getContext(): Context {
@@ -152,6 +154,10 @@ class WatchlistAdapter(private val dataSet: ArrayList<FavoritesPortfolioDataMode
             dataSet?.sortBy { item -> item.ticker }
             dataSet?.sortBy { item -> item.type }
             notifyDataSetChanged()
+        }
+
+        fun swapData(from: Int, to: Int) {
+            Collections.swap(dataSet, from, to)
         }
 
         fun getData(): ArrayList<FavoritesPortfolioDataModel>? {
