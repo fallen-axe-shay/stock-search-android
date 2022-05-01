@@ -209,12 +209,24 @@ class StockSummary : AppCompatActivity() {
 
             buyButton.setOnClickListener{
                 val noText = shares.text.toString().trim()
+                if(!isNumber(noText)) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Please enter a valid amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
                 var no = 0
                 if(!noText.equals("")) {
                     no = noText.toInt()
                 }
-                if(no == 0) {
-                    dialog.dismiss()
+                if(no <= 0) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Cannot buy non-positive shares",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     val totalCost = no * profileAndPriceData.getDouble("c")
                     val currentWallet =
@@ -240,12 +252,24 @@ class StockSummary : AppCompatActivity() {
 
             sellButton.setOnClickListener{
                 val noText = shares.text.toString().trim()
+                if(!isNumber(noText)) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Please enter a valid amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
                 var no = 0
                 if(!noText.equals("")) {
                     no = noText.toInt()
                 }
-                if(no == 0) {
-                    dialog.dismiss()
+                if(no <= 0) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Cannot sell non-positive shares",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
 
                     val shareData = sharedPref.getString(getString(R.string.shares_owned), "{}")
@@ -285,6 +309,10 @@ class StockSummary : AppCompatActivity() {
 
     }
 
+    fun isNumber(s: String?): Boolean {
+        return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
+    }
+
     fun showPortfolioData() {
         val shareData = sharedPref.getString(getString(R.string.shares_owned), "{}")
         val shareObject = JSONTokener(shareData).nextValue() as JSONObject
@@ -304,6 +332,8 @@ class StockSummary : AppCompatActivity() {
         avgCost.text = "$${roundToTwoDecimalPlaces(average).toString()}"
         marketValue.text = "$${roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c")).toString()}"
         totalCost.text = "$${roundToTwoDecimalPlaces(totalShareCost).toString()}"
+        changeCost.setTextColor(resources.getColor(R.color.gray))
+        marketValue.setTextColor(resources.getColor(R.color.gray))
         var changeData = profileAndPriceData.getDouble("c") - average
         if(currentArray.length()!=0) {
             if(changeData>0) {
