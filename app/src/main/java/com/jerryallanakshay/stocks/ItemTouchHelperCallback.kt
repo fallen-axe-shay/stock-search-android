@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -61,7 +62,7 @@ class ItemTouchHelperCallback(val adapter: WatchlistAdapter): ItemTouchHelper.Si
         if(viewHolder.adapterPosition == -1) return makeMovementFlags(0, 0)
         val type = mAdapter.getData()?.get(viewHolder.adapterPosition)?.type
         if(type!=3 && type!=5) return makeMovementFlags(0,0)
-        val  dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END
+        val  dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
         val swipeFlags = ItemTouchHelper.LEFT
         if(type==3) return makeMovementFlags(dragFlags, 0)
         return makeMovementFlags(dragFlags, swipeFlags)
