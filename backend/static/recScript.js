@@ -66,7 +66,7 @@ function showHighCharts(response) {
             column: {
               stacking: 'normal',
               dataLabels: {
-                enabled: true
+                enabled: false
               }
             }
           },
