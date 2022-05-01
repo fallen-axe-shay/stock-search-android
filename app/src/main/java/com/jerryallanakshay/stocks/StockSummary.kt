@@ -307,8 +307,10 @@ class StockSummary : AppCompatActivity() {
         if(currentArray.length()!=0) {
             if(changeData>0) {
                 changeCost.setTextColor(resources.getColor(R.color.green_tint))
+                marketValue.setTextColor(resources.getColor(R.color.green_tint))
             } else if(changeData<0) {
                 changeCost.setTextColor(resources.getColor(R.color.red_tint))
+                marketValue.setTextColor(resources.getColor(R.color.red_tint))
             }
             changeCost.text = "$${roundToTwoDecimalPlaces(changeData).toString()}"
         } else {
