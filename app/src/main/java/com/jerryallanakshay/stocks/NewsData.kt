@@ -31,7 +31,7 @@ class NewsData(title: String, date: Long, source: String, image: String, url: St
             measurement = "minutes"
         }
         if(diff.toInt()==1) {
-            measurement = measurement.substring(0, -1)
+            measurement = measurement.substring(0, measurement.length-1)
         }
         return "${diff.toInt()} $measurement ago"
     }
