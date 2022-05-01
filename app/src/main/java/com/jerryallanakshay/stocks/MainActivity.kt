@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     updateAutoCompleteAdapter(compList.toTypedArray(), searchTicker)
                 },
-                { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+                { /*Do nothing*/ })
             jsonObjectRequest.tag = searchTicker.text.toString()
             queue?.add(jsonObjectRequest)
         }
@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
                 updateRequestCompleted++
                 checkIfAllDataUpdated(indexWallet)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         portfolioQueue?.add(jsonObjectRequest)
     }
 
@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity() {
                 updateRequestCompleted++
                 checkIfAllDataUpdated()
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         watchlistQueue?.add(jsonObjectRequest)
     }
 
@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                 getSetCashBalance(sharedPref, true, currentArray.length()*response.getDouble("c"))
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         queue?.add(jsonObjectRequest)
     }
 
@@ -309,7 +309,7 @@ class MainActivity : AppCompatActivity() {
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         queue?.add(jsonObjectRequest)
     }
 
@@ -351,7 +351,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         updateAutoCompleteAdapter(compList.toTypedArray(), searchTicker)
                     },
-                    { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+                    { /*Do nothing*/ })
                 jsonObjectRequest.tag = s.toString()
                 queue?.add(jsonObjectRequest)
             }
