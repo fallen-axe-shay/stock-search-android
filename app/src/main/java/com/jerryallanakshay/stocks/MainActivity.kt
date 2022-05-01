@@ -245,7 +245,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchPortfolioData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
-        watchlistArrayList?.removeIf { data -> data.type == 3 }
         val prefData = sharedPref.getString(getString(R.string.shares_owned), "{}")
         val shareObject = JSONTokener(prefData).nextValue() as JSONObject
         val keys: Iterator<*> = shareObject.keys()
@@ -274,8 +273,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 var changeData = (response.getDouble("c") - average) * currentArray.length()
                 var changePercent = (changeData/totalCost) * 100
-                watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", (currentArray.length() * response.getDouble("c")), changeData, changePercent, 3, ""))
-                watchlistAdapter?.notifyDataSetChangedWithSort()
+                var idx = watchlistArrayList?.indexOfLast { it.type == 3 && it.ticker==response.getString("ticker") }
+                if(idx==-1)
+                    idx = watchlistArrayList?.indexOfLast { it.type==2 }?.plus(1)
+                else
+                    watchlistArrayList?.removeAt(idx!!)
+                watchlistArrayList?.add(idx!!, FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", (currentArray.length() * response.getDouble("c")), changeData, changePercent, 3, ""))
+                watchlistAdapter?.notifyDataSetChanged()
                 completedRequests++
                 getSetCashBalance(sharedPref, true, currentArray.length()*response.getDouble("c"))
                 checkAndTogglePageVisibility(pageLoader, pageContent)
@@ -285,7 +289,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchFavoritesData(sharedPref: SharedPreferences, pageLoader: ProgressBar, pageContent: RelativeLayout) {
-        watchlistArrayList?.removeIf { data -> data.type == 5 }
         val prefData = sharedPref.getString(getString(R.string.watchlist), "[]")
         val jsonArray = JSONTokener(prefData).nextValue() as JSONArray
         for(i in 0 until jsonArray.length()) {
@@ -304,8 +307,13 @@ class MainActivity : AppCompatActivity() {
         val jsonObjectRequest = JsonObjectRequest (
             Request.Method.GET, url, null,
             { response ->
-               watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), response.getString("name"), response.getString("c").toDouble(), response.getString("d").toDouble(), response.getString("dp").toDouble(), 5, ""))
-                watchlistAdapter?.notifyDataSetChangedWithSort()
+                var idx = watchlistArrayList?.indexOfLast { it.type == 5 && it.ticker==response.getString("ticker") }
+                if(idx==-1)
+                    idx = watchlistArrayList?.indexOfLast { it.type==4 }?.plus(1)
+                else
+                    watchlistArrayList?.removeAt(idx!!)
+                watchlistArrayList?.add(idx!!, FavoritesPortfolioDataModel(response.getString("ticker"), response.getString("name"), response.getString("c").toDouble(), response.getString("d").toDouble(), response.getString("dp").toDouble(), 5, ""))
+                watchlistAdapter?.notifyDataSetChanged()
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
@@ -417,7 +425,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getSetCashBalance(sharedPref: SharedPreferences, fromPortfolio: Boolean = false, amount: Double = 0.0) {
-        watchlistArrayList?.removeIf { data -> data.type == 2 }
         val currentCashBalance = sharedPref.getFloat(getString(R.string.cash_balance), 25000.00F)
         with (sharedPref.edit()) {
             putFloat(getString(R.string.cash_balance), currentCashBalance)
@@ -428,8 +435,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             netWorth = currentCashBalance.toDouble()
         }
-        watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 2, netWorth = netWorth, cashBalance = currentCashBalance.toDouble()))
-        watchlistAdapter!!.notifyDataSetChangedWithSort()
+        var idx = watchlistArrayList?.indexOfLast { it.type == 2 }
+        if(idx==-1)
+            idx = (watchlistArrayList?.indexOfLast { it.type==1 })?.plus(1)
+        else
+            watchlistArrayList?.removeAt(idx!!)
+        watchlistArrayList?.add(idx!!, FavoritesPortfolioDataModel(type = 2, netWorth = netWorth, cashBalance = currentCashBalance.toDouble()))
+        watchlistAdapter!!.notifyDataSetChanged()
     }
 
     fun roundToTwoDecimalPlaces(value: Double): BigDecimal? {
