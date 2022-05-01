@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -32,6 +33,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.schedule
 
 
 class MainActivity : AppCompatActivity() {
@@ -111,14 +113,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setUpdateInterval() {
-        timer = Timer()
-        timer.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                updateCashBalance()
-                updatePortfolioData()
-                updateWatchlistData()
-            }
-        }, 0, 15000)
+        Timer().schedule(2000) {
+            timer = Timer()
+            timer.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    updateCashBalance()
+                    updatePortfolioData()
+                    updateWatchlistData()
+                }
+            }, 0, 15000)
+        }
     }
 
     fun updateCashBalance() {
