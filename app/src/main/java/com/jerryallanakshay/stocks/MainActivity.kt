@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
     private var netWorth = 0.0
     private var updateRequestCounter: Int = 0
     private var updateRequestCompleted: Int = 0
-    private var isAutocompleteItemClicked: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         shouldExecuteOnResume = false
@@ -349,7 +348,6 @@ class MainActivity : AppCompatActivity() {
 
     fun updateAutoCompleteAdapter(data: Array<String>, searchTicker: AutoCompleteTextView) {
         autocompleteData.clear()
-        isAutocompleteItemClicked = false
         autocompleteData.addAll(data)
         setAutoCompleteAdapter(searchTicker)
     }
@@ -361,30 +359,24 @@ class MainActivity : AppCompatActivity() {
         searchTicker.refreshAutoCompleteResults()
     }
 
-    fun isValidSearch():Boolean {
-        return isAutocompleteItemClicked
-    }
-
     fun setAdapterAndItemClickListener(searchTicker: AutoCompleteTextView) {
         setAutoCompleteAdapter(searchTicker)
         searchTicker.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
             val ticker = modifyAutocompleteSelectedOption(autocompleteData[pos])
             searchTicker.setText(ticker)
             searchTicker.setSelection(searchTicker.length())
-            isAutocompleteItemClicked = true
+            hideKeyboard(applicationContext, searchTicker)
+            searchTicker.clearFocus()
+            val intent = Intent(applicationContext, StockSummary::class.java).apply {
+                putExtra(resources.getString(R.string.intent_stock_summary), ticker)
+            }
+            timer.cancel()
+            timer.purge()
+            startActivity(intent)
         }
         searchTicker.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
-                hideKeyboard(applicationContext, searchTicker)
-                searchTicker.clearFocus()
-                if(isValidSearch()) {
-                    val intent = Intent(applicationContext, StockSummary::class.java).apply {
-                        putExtra(resources.getString(R.string.intent_stock_summary), searchTicker.text.toString())
-                    }
-                    timer.cancel()
-                    timer.purge()
-                    startActivity(intent)
-                }
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                //Perform Code
                 hideKeyboard(applicationContext, searchTicker)
                 searchTicker.clearFocus()
                 return@OnKeyListener true
