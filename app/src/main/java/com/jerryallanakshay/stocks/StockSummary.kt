@@ -428,7 +428,7 @@ class StockSummary : AppCompatActivity() {
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */})
         queue?.add(jsonObjectRequest)
     }
 
@@ -444,7 +444,7 @@ class StockSummary : AppCompatActivity() {
                 fetchRecentHistoryData(profileAndPriceData.getLong("t"), pageLoader, pageContent)
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /*Do nothing*/ })
         queue?.add(jsonObjectRequest)
 
         url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.news_api)}$stockSymbol"
@@ -456,7 +456,7 @@ class StockSummary : AppCompatActivity() {
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         queue?.add(jsonArrayRequest)
 
         url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.company_peer_api)}$stockSymbol"
@@ -468,7 +468,7 @@ class StockSummary : AppCompatActivity() {
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         queue?.add(jsonArrayRequest)
 
         url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.social_sentiment_api)}$stockSymbol"
@@ -480,7 +480,7 @@ class StockSummary : AppCompatActivity() {
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+            { /* Do nothing */ })
         queue?.add(jsonObjectRequest)
 
     }
