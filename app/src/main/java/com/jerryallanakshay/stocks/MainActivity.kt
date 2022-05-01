@@ -148,10 +148,12 @@ class MainActivity : AppCompatActivity() {
                 watchlistArrayList?.get(index!!)?.stockPrice = roundToTwoDecimalPlaces(currentArray.length() * response.getDouble("c")).toString()
                 watchlistArrayList?.get(index!!)?.stockChange = roundToTwoDecimalPlaces(changeData).toString()
                 watchlistArrayList?.get(index!!)?.stockChangePercent = roundToTwoDecimalPlaces(changePercent).toString()
+                watchlistAdapter?.notifyItemChanged(index!!)
                 val indexWallet = watchlistArrayList?.indexOfFirst { it.type == 2 }
                 var netWorth = watchlistArrayList!!.get(indexWallet!!).netWorth.toDouble()
                 netWorth += (currentArray.length()*response.getDouble("c"))
                 watchlistArrayList!!.get(indexWallet!!).netWorth = roundToTwoDecimalPlaces(netWorth).toString()
+                watchlistAdapter?.notifyItemChanged(indexWallet!!)
                 updateRequestCompleted++
                 checkIfAllDataUpdated()
             },
@@ -161,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
     fun checkIfAllDataUpdated() {
         if(updateRequestCounter==updateRequestCompleted) {
-            watchlistAdapter?.notifyDataSetChanged()
+            //watchlistAdapter?.notifyDataSetChanged()
         }
     }
 
@@ -197,6 +199,7 @@ class MainActivity : AppCompatActivity() {
                 watchlistArrayList?.get(index!!)?.stockPrice = roundToTwoDecimalPlaces(response.getDouble("c")).toString()
                 watchlistArrayList?.get(index!!)?.stockChange = roundToTwoDecimalPlaces(response.getDouble("d")).toString()
                 watchlistArrayList?.get(index!!)?.stockChangePercent = roundToTwoDecimalPlaces(response.getDouble("dp")).toString()
+                watchlistAdapter?.notifyItemChanged(index!!)
                 updateRequestCompleted++
                 checkIfAllDataUpdated()
             },
