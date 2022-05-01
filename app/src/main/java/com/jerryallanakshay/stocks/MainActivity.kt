@@ -142,8 +142,8 @@ class MainActivity : AppCompatActivity() {
                 if(currentArray.length()!=0) {
                     average = roundToTwoDecimalPlaces(totalCost/currentArray.length()).toString().toDouble()
                 }
-                var changeData = response.getDouble("c") - average
-                var changePercent = (changeData/average) * 100
+                var changeData = (response.getDouble("c") - average) * currentArray.length()
+                var changePercent = (changeData/totalCost) * 100
                 val index = watchlistArrayList?.indexOfFirst { it.ticker == response.getString("ticker") }
                 watchlistArrayList?.get(index!!)?.stockPrice = roundToTwoDecimalPlaces(currentArray.length() * response.getDouble("c")).toString()
                 watchlistArrayList?.get(index!!)?.stockChange = roundToTwoDecimalPlaces(changeData).toString()
@@ -245,8 +245,8 @@ class MainActivity : AppCompatActivity() {
                 if(currentArray.length()!=0) {
                     average = roundToTwoDecimalPlaces(totalCost/currentArray.length()).toString().toDouble()
                 }
-                var changeData = response.getDouble("c") - average
-                var changePercent = (changeData/average) * 100
+                var changeData = (response.getDouble("c") - average) * currentArray.length()
+                var changePercent = (changeData/totalCost) * 100
                 watchlistArrayList?.add(FavoritesPortfolioDataModel(response.getString("ticker"), "${currentArray.length()} Shares", (currentArray.length() * response.getDouble("c")), changeData, changePercent, 3, ""))
                 watchlistAdapter?.notifyDataSetChangedWithSort()
                 completedRequests++
