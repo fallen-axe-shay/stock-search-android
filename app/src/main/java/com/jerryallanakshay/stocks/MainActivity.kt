@@ -110,6 +110,27 @@ class MainActivity : AppCompatActivity() {
 
         checkAndTogglePageVisibility(pageLoader, pageContent)
 
+        searchTicker.setOnClickListener {
+            val url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.autocomplete_api)}${searchTicker.text.toString()}"
+            val jsonObjectRequest = JsonObjectRequest (
+                Request.Method.GET, url, null,
+                { response ->
+                    val compList = mutableListOf<String>()
+                    val result = response.getJSONArray("result")
+                    for (i in 0 until result.length()) {
+                        val company = result.getJSONObject(i)
+                        if(!company.getString("type").equals("Common Stock") || company.getString("displaySymbol").contains(".")) {
+                            continue
+                        }
+                        compList.add("${company.getString("symbol").uppercase()} | ${company.getString("description").uppercase()}")
+                    }
+                    updateAutoCompleteAdapter(compList.toTypedArray(), searchTicker)
+                },
+                { /*Do nothing*/ })
+            jsonObjectRequest.tag = searchTicker.text.toString()
+            queue?.add(jsonObjectRequest)
+        }
+
     }
 
     fun setUpdateInterval() {
