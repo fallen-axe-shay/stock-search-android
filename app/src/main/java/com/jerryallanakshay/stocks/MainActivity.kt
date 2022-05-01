@@ -40,13 +40,13 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         var timer = Timer()
+        var watchlistAdapter: WatchlistAdapter? = null
+        var watchlistArrayList: ArrayList<FavoritesPortfolioDataModel>? = ArrayList()
     }
 
     private var queue: RequestQueue? = null
     private var autocompleteData: MutableList<String> = mutableListOf<String>()
     private var autoCompleteAdapter: ArrayAdapter<String>? = null
-    private var watchlistArrayList: ArrayList<FavoritesPortfolioDataModel>? = ArrayList()
-    private var watchlistAdapter: WatchlistAdapter? = null
     private var itemTouchHelper: ItemTouchHelper? = null
     private var requestCounter: Int = 0
     private var completedRequests: Int = 0

@@ -361,6 +361,11 @@ class StockSummary : AppCompatActivity() {
         }
         if(currentArray.length()==0) {
             shareObject.remove(symbol)
+            val index = MainActivity.watchlistArrayList?.indexOfFirst { it.ticker == stockSymbol && it.type==3 }
+            if(index!=-1) {
+                MainActivity.watchlistArrayList?.removeAt(index!!)
+                MainActivity.watchlistAdapter?.notifyItemRemoved(index!!)
+            }
         } else {
             shareObject.put(symbol, currentArray)
         }
@@ -633,6 +638,11 @@ class StockSummary : AppCompatActivity() {
         if(elementIndex!=-1) {
             jsonArray.remove(elementIndex)
             Toast.makeText(applicationContext, "$stockSymbol is removed from favorites", Toast.LENGTH_SHORT).show()
+            val index = MainActivity.watchlistArrayList?.indexOfLast { it.ticker == stockSymbol && it.type == 5 }
+            if(index!=-1) {
+                MainActivity.watchlistArrayList?.removeAt(index!!)
+                MainActivity.watchlistAdapter?.notifyItemRemoved(index!!)
+            }
         } else {
             jsonArray.put(stockSymbol)
             isStarred = true
