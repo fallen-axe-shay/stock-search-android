@@ -12,13 +12,18 @@ $.ajax({
     }
 });
 
+function round(num) {
+  var m = Number((Math.abs(num) * 100).toPrecision(15));
+  return Math.round(m) / 100 * Math.sign(num);
+}
+
 function showHighCharts(response) {
 
     let actualData = response.map((item) => item['actual']==null ? 0 : item['actual']);
 
     let estimateData = response.map((item) => item['estimate']==null ? 0 : item['estimate']);
 
-    let categories = response.map((item) => `${item['period']}<br>Surprise: ${item['surprise']==null ? 0 : item['surprise']}`);
+    let categories = response.map((item) => `${item['period']}<br>Surprise: ${item['surprise']==null ? 0.00 : round(item['surprise'])}`);
 
 
     // create the chart

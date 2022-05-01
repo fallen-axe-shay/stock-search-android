@@ -150,6 +150,7 @@ class StockSummary : AppCompatActivity() {
         val linearLayoutManager = LinearLayoutManager(applicationContext)
         newsRecycler.layoutManager = linearLayoutManager
         newsRecycler.adapter = newsAdapter
+        newsRecycler.isNestedScrollingEnabled = false
 
         peerRecyclerLayoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.HORIZONTAL, false)
         peerRecycler.layoutManager = peerRecyclerLayoutManager
