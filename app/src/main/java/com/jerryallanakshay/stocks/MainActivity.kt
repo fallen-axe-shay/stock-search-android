@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     updateAutoCompleteAdapter(compList.toTypedArray(), searchTicker)
                 },
-                { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+                { error -> Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
             jsonObjectRequest.tag = searchTicker.text.toString()
             jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
                 50000,
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
                 updateRequestCompleted++
                 checkIfAllDataUpdated(indexWallet)
             },
-            { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+            { error -> Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
         jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
             50000,
             5,
@@ -235,7 +235,7 @@ class MainActivity : AppCompatActivity() {
                 updateRequestCompleted++
                 checkIfAllDataUpdated()
             },
-            { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+            { error -> Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
         jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
             50000,
             5,
@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
                 getSetCashBalance(sharedPref, true, currentArray.length()*response.getDouble("c"))
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+            { error -> Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
         jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
             50000,
             5,
@@ -339,7 +339,7 @@ class MainActivity : AppCompatActivity() {
                 completedRequests++
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
-            { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+            { error -> Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
         jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
             50000,
             5,
@@ -386,7 +386,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         updateAutoCompleteAdapter(compList.toTypedArray(), searchTicker)
                     },
-                    { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+                    { error -> Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
                 jsonObjectRequest.tag = s.toString()
                 jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
                     50000,
