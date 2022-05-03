@@ -1,16 +1,13 @@
 package com.jerryallanakshay.stocks
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -22,6 +19,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
@@ -128,6 +126,11 @@ class MainActivity : AppCompatActivity() {
                 },
                 { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
             jsonObjectRequest.tag = searchTicker.text.toString()
+            jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+                50000,
+                5,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+            )
             queue?.add(jsonObjectRequest)
         }
 
@@ -182,6 +185,11 @@ class MainActivity : AppCompatActivity() {
                 checkIfAllDataUpdated(indexWallet)
             },
             { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         portfolioQueue?.add(jsonObjectRequest)
     }
 
@@ -228,6 +236,11 @@ class MainActivity : AppCompatActivity() {
                 checkIfAllDataUpdated()
             },
             { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         watchlistQueue?.add(jsonObjectRequest)
     }
 
@@ -285,6 +298,11 @@ class MainActivity : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonObjectRequest)
     }
 
@@ -322,6 +340,11 @@ class MainActivity : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonObjectRequest)
     }
 
@@ -365,6 +388,11 @@ class MainActivity : AppCompatActivity() {
                     },
                     { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show() })
                 jsonObjectRequest.tag = s.toString()
+                jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+                    50000,
+                    5,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                )
                 queue?.add(jsonObjectRequest)
             }
 

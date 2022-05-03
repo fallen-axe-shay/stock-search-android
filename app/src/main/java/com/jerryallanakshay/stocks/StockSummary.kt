@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
@@ -434,6 +435,11 @@ class StockSummary : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonObjectRequest)
     }
 
@@ -450,6 +456,11 @@ class StockSummary : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonObjectRequest)
 
         url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.news_api)}$stockSymbol"
@@ -462,6 +473,11 @@ class StockSummary : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+        jsonArrayRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonArrayRequest)
 
         url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.company_peer_api)}$stockSymbol"
@@ -474,6 +490,11 @@ class StockSummary : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+        jsonArrayRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonArrayRequest)
 
         url = "${resources.getString(R.string.server_url)}${resources.getString(R.string.social_sentiment_api)}$stockSymbol"
@@ -486,6 +507,11 @@ class StockSummary : AppCompatActivity() {
                 checkAndTogglePageVisibility(pageLoader, pageContent)
             },
             { Toast.makeText(applicationContext, "API Limit Exceeded", Toast.LENGTH_SHORT).show() })
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            50000,
+            5,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
         queue?.add(jsonObjectRequest)
 
     }
