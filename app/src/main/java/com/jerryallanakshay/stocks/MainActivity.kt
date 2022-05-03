@@ -298,8 +298,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addBannersToArrayList() {
-        watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 1, banner = "portfolio"))
-        watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 4, banner = "favorites"))
+        var idx = watchlistArrayList?.indexOfLast { it.type == 1 }
+        if(idx==-1)
+            watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 1, banner = "portfolio"))
+        idx = watchlistArrayList?.indexOfLast { it.type == 4 }
+        if(idx==-1)
+            watchlistArrayList?.add(FavoritesPortfolioDataModel(type = 4, banner = "favorites"))
     }
 
     fun makeStockRequest(ticker: String, pageLoader: ProgressBar, pageContent: RelativeLayout) {
