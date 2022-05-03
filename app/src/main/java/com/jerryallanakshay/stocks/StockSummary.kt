@@ -335,7 +335,7 @@ class StockSummary : AppCompatActivity() {
         totalCost.text = "$${roundToTwoDecimalPlaces(totalShareCost).toString()}"
         changeCost.setTextColor(resources.getColor(R.color.gray))
         marketValue.setTextColor(resources.getColor(R.color.gray))
-        var changeData = profileAndPriceData.getDouble("c") - average
+        var changeData = roundToTwoDecimalPlaces(profileAndPriceData.getDouble("c") - average)!!.toDouble()
         if(currentArray.length()!=0) {
             if(changeData>0) {
                 changeCost.setTextColor(resources.getColor(R.color.green_tint))
