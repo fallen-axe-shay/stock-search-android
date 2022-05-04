@@ -181,6 +181,7 @@ class MainActivity : AppCompatActivity() {
                 var netWorth = watchlistArrayList!!.get(indexWallet!!).netWorth.toDouble()
                 netWorth += (currentArray.length()*response.getDouble("c"))
                 watchlistArrayList!!.get(indexWallet!!).netWorth = roundToTwoDecimalPlaces(netWorth).toString()
+                watchlistAdapter?.notifyItemChanged(indexWallet!!)
                 updateRequestCompleted++
                 checkIfAllDataUpdated(indexWallet)
             },
