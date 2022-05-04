@@ -695,7 +695,7 @@
                         android:text="Social Sentiments"
                         android:textSize="@dimen/text_size_headers"
                         android:textColor="@color/black"
-                        android:textStyle="bold"
+                        android:textStyle="normal"
                         android:gravity="center"
                         android:paddingVertical="10dp"/>
 
